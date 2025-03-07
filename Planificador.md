@@ -12,7 +12,7 @@
 
 ---
 
-### 2️⃣ **Página de Registro y Login**
+### 2️⃣ **Página de Registro y Login** (Francisco)
 **Descripción:** Página donde los clientes pueden registrarse o iniciar sesión en la plataforma.  
 **Contenido:**  
 - Formulario de registro con: Nombre, Apellido, Correo, Teléfono y Contraseña.  
@@ -30,7 +30,7 @@
 
 ---
 
-### 4️⃣ **Página de Agendamiento de Citas**
+### 4️⃣ **Página de Agendamiento de Citas** (Francisco)
 **Descripción:** Formulario para que los clientes puedan agendar citas para sus mascotas.  
 **Contenido:**  
 - Selección de mascota (desde la lista de mascotas registradas por el cliente).  
