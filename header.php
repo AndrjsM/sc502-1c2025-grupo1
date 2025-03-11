@@ -5,7 +5,7 @@
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="navbar-brand ms-2" href="#">
+                <a class="navbar-brand ms-2" href="home.php"> <!-- Enlace del logo corregido -->
                     <!--<img src="logo.png" alt="Logo" style="width: 30px; height: 30px;">-->
                     Patitas al rescate
                 </a>
@@ -17,7 +17,7 @@
             <div class="collapse navbar-collapse" id="navbarsExample07">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="home.php">Home</a> <!-- Enlace "Home" corregido -->
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Servicios</a>
