@@ -6,12 +6,12 @@ $id_cliente = $_SESSION['id_cliente'];
 ///el metodo REQUEST METHO junto con POST se usa para verificar el form enviado
 if ($_SERVER['REQUEST_METHOD'] == "POST"){
     //obtenemos los valores ingresados por el usuario
-    $id_mascota = $_POST['id_masctota'];
+    $id_mascota = $_POST['id_mascota'];
     $fecha = $_POST['fecha'];
     $hora = $_POST['hora'];
 
     //Agendar cita
-    $agendar = "INSERT INTO citas (id_cliente, id_mascota, fecha, hota) VALUES ($id_cliente, $id_mascota, '$fecha', '$hora')";
+    $agendar = "INSERT INTO citas (id_cliente, id_mascota, fecha, hora) VALUES ($id_cliente, $id_mascota, '$fecha', '$hora')";
 
     if ($conn->query($agendar) === TRUE){
         $aviso = "Cita agendada con éxito.";
@@ -34,11 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST"){
 
     <?php include 'header.php'; ?>
 
-    <div class=""container my-5">
+    <div class="container my-5">
         <h1 class="text-center">Agendar Cita</h1>
 
         <!--formulario-->
-        <form action="agendarCita.php" method="POST">
+        <form action="agendarCitas.php" method="POST">
             <div class="mb-3">
                 <label for="id_mascota" class="form-label">Selecciona la Macota: </label>
                 <select name="id_mascota" id="id_mascota" class="form-select">
