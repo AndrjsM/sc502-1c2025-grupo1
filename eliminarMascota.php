@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 
 if(!$_SESSION['id_cliente']){
@@ -8,7 +8,7 @@ if(!$_SESSION['id_cliente']){
 
 include('includes/db.php');
 
-$id_mascota =$_GET['id'];
+$id_mascota = $_GET['id'];
 
 if(!$id_mascota){
     header("Location: dashboard.php");
@@ -18,7 +18,7 @@ if(!$id_mascota){
 //eliminar mascota del ddb: db.php
 $eliminarMascota = "DELETE FROM mascotas WHERE id_mascota = $id_mascota";
 
-if($conn ->query($eliminarMascota))=== TRUE{
+if($conn->query($eliminarMascota) === TRUE){
     header("Location: dashboard.php");
     exit();
 }else{
@@ -34,27 +34,24 @@ if($conn ->query($eliminarMascota))=== TRUE{
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+    <?php include 'header.php'; ?>
 
-        <?php include 'header.php'; ?>
+    <div class="container my-5">
+        <h2>Eliminar Mascota</h2>
 
-        <div class="container my-5">
-            <h2>Eliminar Mascota</h2>
+        <?php if ($alerta) : ?>
+            <div class="alert alert-danger">
+                <?php echo $alerta; ?>
+            </div>
+        <?php endif; ?>
 
-            <?php if ($alerta) : ?>
-                <div class = "alert alert-danger">
-                    <?php echo $alerta; ?>
-                </div>
-            <?php endif; ?>
+        <p>¿Realmente quieres eliminar esta mascota? Es una acción irreversible.</p>
 
-            <p>¿Realmente quieres eliminar esta mascota? Es una acción irreversible.</p>
+        <a href="dashboard.php" class="btn btn-secondary">Cancelar</a>
+    </div>
 
-            <a href="dashboard.php" class = "btn btn-secondary">Cancelar</a>
-        </div>
+    <?php include 'footer.php'; ?>
+</body>
+</html>
 
-        <?php include 'footer.php'; ?>
-
-    </body>
-    </html>
-
-    <?php $conn -> close(); ?>
-
+<?php $conn->close(); ?>

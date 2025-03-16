@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $alerta = "Error al actualizar: " . $conn->error;
     }
-    
+}
 ?>
 
 <!DOCTYPE html>
