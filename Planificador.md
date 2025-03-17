@@ -50,7 +50,7 @@
 
 ---
 
-### 6️⃣ **Página de Facturación**
+### 6️⃣ **Página de Facturación**(Daniel Jimenez Rivera)
 **Descripción:** Muestra el historial de facturas generadas tras cada servicio.  
 **Contenido:**  
 - Listado de facturas con fecha, total y estado (pagado o pendiente).  
