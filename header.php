@@ -20,13 +20,13 @@
                         <a class="nav-link active" aria-current="page" href="home.php">Home</a> <!-- Enlace "Home" corregido -->
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Servicios</a>
+                        <a class="nav-link" href="servicios.php">Servicios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Ubicacion</a>
+                        <a class="nav-link" href="ubicacion.php">Ubicacion</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Contactenos</a>
+                        <a class="nav-link" href="contactenos.php">Contactenos</a>
                     </li>
                 </ul>
                 <div class="col-md-3 text-end d-none d-lg-block">
