@@ -1,38 +1,48 @@
 <?php
 session_start();
 
-if(!$_SESSION['id_cliente']){
+if (!isset($_SESSION['id_cliente'])) {
     header("Location: login.php");
     exit();
 }
 
-include('includes/db.php');
+include('db.php');
 
-$id_mascota = $_GET['id'];
+$id_mascota = $_GET['id'] ?? null;
 
-if (!$id_mascota){
+if (!$id_mascota) {
     header("Location: dashboard.php");
     exit();
 }
 
-//para editar necesitamos los datos
-$infoMascota = "SELECT * FROM mascotas WHERE id_mascota = $id_mascota";
-$resultadoMascotas = $conn->query($infoMascota);
-$datosMascota = $resultadoMascotas->fetch_assoc();
+// Conexión PDO
+try {
+    $sql = "SELECT * FROM mascotas WHERE id_mascota = $id_mascota";
+    $result = $conn->query($sql);
+    $datosMascota = $result->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+    exit();
+}
 
-//post para datos enviados desde un form html
+// POST para dates enviados desde un HTML
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombre = $_POST['nombre'];
     $raza = $_POST['raza'];
     $edad = $_POST['edad'];
 
-    $updateMascota = "UPDATE mascotas SET nombre = '$nombre', raza = '$raza', edad = '$edad' WHERE id_mascota = $id_mascota";
+    try {
+        $updateMascota = "UPDATE mascotas SET nombre = '$nombre', raza = '$raza', edad = '$edad' WHERE id_mascota = $id_mascota";
+        $result = $conn->exec($updateMascota);
 
-    if ($conn->query($updateMascota) === TRUE) {
-        header("Location: dashboard.php");
-        exit();
-    } else {
-        $alerta = "Error. No se pudo actualizar: " . $conn->error;
+        if ($result) {
+            header("Location: dashboard.php");
+            exit();
+        } else {
+            $alerta = "Error. No se pudo actualizar.";
+        }
+    } catch (PDOException $e) {
+        $alerta = "Error: " . $e->getMessage();
     }
 }
 ?>
@@ -78,4 +88,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </body>
 </html>
 
-<?php $conn->close(); ?>
+<?php $conn = null; ?>

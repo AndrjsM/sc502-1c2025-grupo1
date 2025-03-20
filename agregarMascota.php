@@ -1,3 +1,30 @@
+<?php
+include 'db.php';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $nombre = $_POST['nombre'];
+    $raza = $_POST['raza'];
+    $edad = $_POST['edad'];
+
+    try {
+        $query = "INSERT INTO mascotas (nombre, raza, edad, id_cliente) VALUES (:nombre, :raza, :edad, :id_cliente)";
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':nombre', $nombre);
+        $stmt->bindParam(':raza', $raza);
+        $stmt->bindParam(':edad', $edad);
+        $stmt->bindParam(':id_cliente', $id_cliente);
+
+        if ($stmt->execute()) {
+            echo "Mascota registrada con éxito.";
+        } else {
+            echo "Error al registrar la mascota.";
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -33,4 +60,4 @@
 </body>
 </html>
 
-<?php $conn->close(); ?>
+<?php $conn = null; ?>

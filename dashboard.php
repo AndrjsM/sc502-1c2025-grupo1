@@ -1,30 +1,42 @@
 <?php
-//como estamos trabajando con BDD, entonces debemos hacer la conexion aqui
 include('db.php');
-
-session_start(); //se usa cuando ya se esta registrado
+session_start();
 $id_cliente = $_SESSION['id_cliente'];
 
-//Gestionar citas y facturas
 
-$citasCliente = "SELECT * FROM citas 
-              WHERE id_cliente = $id_cliente 
-              ORDER BY fecha DESC";
-$resultadoCitas = $conn->query($citasCliente);
 
-$facturasCliente = "SELECT * FROM facturas 
-              WHERE id_cita IN (SELECT id_cita 
-              From citas WHERE id_cliente = $id_cliente)";
-$resultadoFacturas = $conn->query($facturasCliente);
+// Gestionar citas y facturas
+try {
+    $citasCliente = "SELECT * FROM citas WHERE id_cliente = :id_cliente ORDER BY fecha DESC";
+    $stmt = $conn->prepare($citasCliente);
+    $stmt->bindParam(':id_cliente', $id_cliente);
+    $stmt->execute();
+    $resultadoCitas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Perfil de Cliente
-$infoCliente = "SELECT * FROM clientes WHERE id_cliente = $id_cliente"; //para guardar consultas como texto/string
-$resultadoCliente = $conn->query($infoCliente);
-$datosCliente = $resultadoCliente->fetch_assoc(); //para aceder a los datos del cliente
+    $facturasCliente = "SELECT * FROM facturas WHERE id_cita IN (SELECT id_cita FROM citas WHERE id_cliente = :id_cliente)";
+    $stmt = $conn->prepare($facturasCliente);
+    $stmt->bindParam(':id_cliente', $id_cliente);
+    $stmt->execute();
+    $resultadoFacturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-//mascotas 
-$infoMascota = "SELECT * FROM mascotas WHERE id_cliente = $id_cliente";
-$resultadoMascotas = $conn->query($infoMascota);
+    // Perfil de Cliente
+    $infoCliente = "SELECT * FROM clientes WHERE id_cliente = :id_cliente";
+    $stmt = $conn->prepare($infoCliente);
+    $stmt->bindParam(':id_cliente', $id_cliente);
+    $stmt->execute();
+    $resultadoCliente = $stmt->fetch(PDO::FETCH_ASSOC);
+    $datosCliente = $resultadoCliente;
+
+    // Mascotas
+    $infoMascota = "SELECT * FROM mascotas WHERE id_cliente = :id_cliente";
+    $stmt = $conn->prepare($infoMascota);
+    $stmt->bindParam(':id_cliente', $id_cliente);
+    $stmt->execute();
+    $resultadoMascotas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -44,15 +56,14 @@ $resultadoMascotas = $conn->query($infoMascota);
     <div class="container my-5">
         <h1 class="text-center">Bienvenido al Dashboard</h1>
 
-
         <!-- Apartado Clientes-->
         <section class="mb-5">
             <h2>Perfil del Cliente</h2>
             <div class="card">
                 <div class="card-body">
-                    <p>Nombre: <?php echo $cliente['nombre']; ?></p>
-                    <p>Email: <?php echo $cliente['correo']; ?></p>
-                    <p>Teléfono: <?php echo $cliente['telefono']; ?></p>
+                    <p>Nombre: <?php echo $datosCliente['nombre']; ?></p>
+                    <p>Email: <?php echo $datosCliente['correo']; ?></p>
+                    <p>Teléfono: <?php echo $datosCliente['telefono']; ?></p>
                     <a href="editarPerfil.php" class="btn btn-warning">Editar Perfil</a>
                 </div>
             </div>
@@ -61,7 +72,7 @@ $resultadoMascotas = $conn->query($infoMascota);
         <!-- Apartado Mascotas-->
         <section class="mb-5">
             <h2>Mascotas</h2>
-            <table>
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -71,20 +82,17 @@ $resultadoMascotas = $conn->query($infoMascota);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($infoMascota = $resultadoMascotas->fetch_assoc()): ?>
+                    <?php foreach ($resultadoMascotas as $infoMascota): ?>
                         <tr>
                             <td><?php echo $infoMascota['nombre']; ?></td>
                             <td><?php echo $infoMascota['raza']; ?></td>
                             <td><?php echo $infoMascota['edad']; ?></td>
                             <td>
-                                <a href="editarInfoMascota.php?id=<?php echo $infoMascota['id_mascota']; ?>"
-                                    class="btn btn-info">Editar</a>
-                                <a href="eliminarInfoMascota.php?id=<?php echo $infoMascota['id_mascota']; ?>"
-                                    class="btn btn-danger"
-                                    onclick="return confirmarEliminacion('<?php echo $infoMascota['nombre']; ?>')">Eliminar</a>
+                                <a href="editarInfoMascota.php?id=<?php echo $infoMascota['id_mascota']; ?>" class="btn btn-info">Editar</a>
+                                <a href="eliminarInfoMascota.php?id=<?php echo $infoMascota['id_mascota']; ?>" class="btn btn-danger" onclick="return confirmarEliminacion('<?php echo $infoMascota['nombre']; ?>')">Eliminar</a>
                             </td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
 
@@ -99,24 +107,24 @@ $resultadoMascotas = $conn->query($infoMascota);
         <!-- Apartado de Citas-->
         <section class="mb-5">
             <h2>Registro Citas Agendadas</h2>
-            <table>
+            <table class="table">
                 <thead>
                     <tr>
                         <th>ID Cita</th>
                         <th>Fecha</th>
                         <th>Hora</th>
-                        <th>Estado</th> <!--el estado de la cita-->
+                        <th>Estado</th> 
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = $resultadoCitas->fetch_assoc()): ?>
+                    <?php foreach ($resultadoCitas as $row): ?>
                         <tr>
                             <td><?php echo $row['id_cita']; ?></td>
                             <td><?php echo $row['fecha']; ?></td>
                             <td><?php echo $row['hora']; ?></td>
                             <td><?php echo $row['estado']; ?></td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
             <a href="agendarCita.php" class="btn btn-primary">Agendar Nueva Cita</a>
@@ -125,7 +133,7 @@ $resultadoMascotas = $conn->query($infoMascota);
         <!-- Gestionar Facturas-->
         <section class="mb-5">
             <h2>Historial de Facturas</h2>
-            <table>
+            <table class="table">
                 <thead>
                     <tr>
                         <th>ID Factura</th>
@@ -135,14 +143,14 @@ $resultadoMascotas = $conn->query($infoMascota);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = $resultadoFacturas->fetch_assoc()): ?>
+                    <?php foreach ($resultadoFacturas as $row): ?>
                         <tr>
                             <td><?php echo $row['id_factura']; ?></td>
                             <td><?php echo $row['monto']; ?></td>
                             <td><?php echo $row['fecha']; ?></td>
                             <td><?php echo $row['estado']; ?></td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </section>
@@ -154,4 +162,4 @@ $resultadoMascotas = $conn->query($infoMascota);
 
 </html>
 
-<?php $conn->close(); ?>
+<?php $conn = null; ?>
