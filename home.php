@@ -44,7 +44,7 @@
         <div class="text-center">
             <h1>Bienvenidos a Patitas al Rescate</h1>
             <p class="lead">Cuidamos de tus mascotas como si fueran nuestras</p>
-            <a href="agendar_cita.php" class="btn btn-primary btn-lg">Agendar Cita</a>
+            <a href="agendarCita.php" class="btn btn-primary btn-lg">Agendar Cita</a>
         </div>
     </section>
 

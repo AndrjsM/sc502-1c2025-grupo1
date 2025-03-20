@@ -1,13 +1,14 @@
 <?php
-$servername = "localhost";
-$username = "root";
+$host = "localhost";
+$user = "root";
 $password = "lingsalas";
-$database = "patitas_db";
+$database = "patitasrescate_db";
 
-$conn = new mysqli($servername, $username, $password, $database);
+// Crear la conexión
+$conn = new mysqli($host, $user, $password, $database);
 
 // Verificar conexión
-if ($conn->connect_error) { //$conn es una variable importante, se va a usar en otros php como referencia de conexion a la bdd
-    die("La conexión ha fallado: " . $conn->connect_error);
+if ($conn->connect_error) {
+    die("Error de conexión: " . $conn->connect_error);
 }
 ?>

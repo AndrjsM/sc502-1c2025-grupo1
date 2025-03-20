@@ -1,6 +1,6 @@
 <?php
 //como estamos trabajando con BDD, entonces debemos hacer la conexion aqui
-include('includes/db.php');
+include('db.php');
 
 session_start(); //se usa cuando ya se esta registrado
 $id_cliente = $_SESSION['id_cliente'];

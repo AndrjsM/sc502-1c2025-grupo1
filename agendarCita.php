@@ -1,22 +1,43 @@
 <?php
-include('includes/db.php');
+//include('db.php');
 session_start();
+
+// cliente está autenticado
+if (!isset($_SESSION['id_cliente'])) {
+    header("Location: login.php"); // volver al login si no está autenticado
+    exit();
+}
+
 $id_cliente = $_SESSION['id_cliente'];
 
-///el metodo REQUEST METHO junto con POST se usa para verificar el form enviado
-if ($_SERVER['REQUEST_METHOD'] == "POST"){
-    //obtenemos los valores ingresados por el usuario
-    $id_mascota = $_POST['id_mascota'];
-    $fecha = $_POST['fecha'];
-    $hora = $_POST['hora'];
+$alerta = "";
 
-    //Agendar cita
-    $agendar = "INSERT INTO citas (id_cliente, id_mascota, fecha, hora) VALUES ($id_cliente, $id_mascota, '$fecha', '$hora')";
+// Verificar si el formulario fue enviado
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    if (isset($_POST['id_mascota'], $_POST['fecha'], $_POST['hora'])) {
+        $id_mascota = $_POST['id_mascota'];
+        $fecha = $_POST['fecha'];
+        $hora = $_POST['hora'];
 
-    if ($conn->query($agendar) === TRUE){
-        $aviso = "Cita agendada con éxito.";
-    }else {
-        $aviso = "Error. No se agendó la cita." . $conn->error;
+        
+        if (empty($id_mascota) || empty($fecha) || empty($hora)) {
+            $alerta = "Por favor, completa todos los campos.";
+        } else {
+            
+
+            $stmt = $conn->prepare("INSERT INTO citas (id_cliente, id_mascota, fecha, hora) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("iiss", $id_cliente, $id_mascota, $fecha, $hora);
+
+            if ($stmt->execute()) {
+                $alerta = "Cita agendada con éxito.";
+            } else {
+                $alerta = "Error al agendar la cita: " . $stmt->error;
+            }
+
+            $stmt->close();
+        }
+    } else {
+        $alerta = "Datos del formulario incompletos.";
     }
 }
 
@@ -37,19 +58,40 @@ if ($_SERVER['REQUEST_METHOD'] == "POST"){
     <div class="container my-5">
         <h1 class="text-center">Agendar Cita</h1>
 
-        <!--formulario-->
+        <!-- Alerta -->
+        <?php if (!empty($alerta)) : ?>
+            <div class="alert <?php echo strpos($alerta, 'éxito') !== false ? 'alert-success' : 'alert-danger'; ?>">
+                <?php echo $alerta; ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- Agendar cita -->
         <form action="agendarCitas.php" method="POST">
             <div class="mb-3">
-                <label for="id_mascota" class="form-label">Selecciona la Macota: </label>
-                <select name="id_mascota" id="id_mascota" class="form-select">
+                <label for="id_mascota" class="form-label">Selecciona la Mascota:</label>
+                <select name="id_mascota" id="id_mascota" class="form-select" required>
+                    <option value="" disabled selected>Selecciona una mascota</option>
                     <?php
-                    $mascotasCliente = "SELECT * FROM mascotas WHERE id_cliente = $id_cliente";
-                    $resultadoMascotas = $conn->query($mascotasCliente);
-                    while ($row = $resultadoMascotas->fetch_assoc()){
-                        echo "<option value='".$row['id_mascota']."'>".$row['nombre']."</option>";
+
+                    // Mascotas del cliente
+                    $query = "SELECT id_mascota, nombre FROM mascotas WHERE id_cliente = ?";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $id_cliente);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+
+                    while ($row = $result->fetch_assoc()) {
+                        echo "<option value='" . $row['id_mascota'] . "'>" . htmlspecialchars($row['nombre']) . "</option>";
                     }
+
+                    $stmt->close();
                     ?>
                 </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha:</label>
+                <input type="date" name="fecha" id="fecha" class="form-control" required>
             </div>
 
             <div class="mb-3">
@@ -59,12 +101,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST"){
 
             <button type="submit" class="btn btn-primary">Agendar Cita</button>
         </form>
-        <a href="dashboard.php" class="btn btn-link mt-3">Volver al Dashboard</a>
     </div>
-    <?php include 'footer.php'; 
-    ?>
+
+    <?php include 'footer.php'; ?>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-<?php $conn->close();
-?>
