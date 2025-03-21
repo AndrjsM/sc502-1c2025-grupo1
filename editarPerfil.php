@@ -6,9 +6,9 @@ if ($_SESSION['id_cliente'] == "") {
     exit();
 }
 
-include('include/db.php');
+include('db.php');
 
-$id_cliente = $_SESSION['id_cliente']; //si ya esta registrado
+$id_cliente = $_SESSION['id_cliente']; //usuario registrado
 
 //solicitar los datos existentes del usuario
 $infoCliente = "SELECT * FROM clientes WHERE id_cliente = $id_cliente";

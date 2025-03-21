@@ -11,8 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     try {
         $agendar = "INSERT INTO citas (id_cliente, id_mascota, fecha, hora) VALUES (:id_cliente, :id_mascota, :fecha, :hora)";
         $stmt = $conn->prepare($agendar);
-        $stmt->bindParam(':id_cliente', $id_cliente);
-        $stmt->bindParam(':id_mascota', $id_mascota);
+        $stmt->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
+        $stmt->bindParam(':id_mascota', $id_mascota, PDO::PARAM_INT);
         $stmt->bindParam(':fecha', $fecha);
         $stmt->bindParam(':hora', $hora);
 
@@ -42,35 +42,51 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <div class="container my-5">
         <h1 class="text-center">Agendar Cita</h1>
 
+        <?php if (isset($aviso)) : ?>
+            <div class="alert alert-info text-center">
+                <?= $aviso ?>
+            </div>
+        <?php endif; ?>
+
         <form action="agendarCitas.php" method="POST">
             <div class="mb-3">
-                <label for="id_mascota" class="form-label">Selecciona la Mascota: </label>
-                <select name="id_mascota" id="id_mascota" class="form-select">
+                <label for="id_mascota" class="form-label">Selecciona la Mascota:</label>
+                <select name="id_mascota" id="id_mascota" class="form-select" required>
                     <?php
                     try {
                         $mascotasCliente = "SELECT * FROM mascotas WHERE id_cliente = :id_cliente";
                         $stmt = $conn->prepare($mascotasCliente);
-                        $stmt->bindParam(':id_cliente', $id_cliente);
+                        $stmt->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
                         $stmt->execute();
                         $resultadoMascotas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                        foreach ($resultadoMascotas as $row) {
-                            echo "<option value='".$row['id_mascota']."'>".$row['nombre']."</option>";
+                        if (empty($resultadoMascotas)) {
+                            echo "<option value=''>No tienes mascotas registradas</option>";
+                        } else {
+                            foreach ($resultadoMascotas as $row) {
+                                echo "<option value='".$row['id_mascota']."'>".$row['nombre']."</option>";
+                            }
                         }
                     } catch (PDOException $e) {
-                        echo "Error: " . $e->getMessage();
+                        echo "<option value=''>Error al cargar mascotas</option>";
                     }
                     ?>
                 </select>
             </div>
 
             <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha:</label>
+                <input type="date" name="fecha" id="fecha" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
                 <label for="hora" class="form-label">Hora:</label>
-                <input type="time" name="hora" id="hora" class="form-control" required>
+                <input type="time" name="hora" id="hora" class="form-control" required min="08:00" max="18:00">
             </div>
 
             <button type="submit" class="btn btn-primary">Agendar Cita</button>
         </form>
+
         <a href="dashboard.php" class="btn btn-link mt-3">Volver al Dashboard</a>
     </div>
     

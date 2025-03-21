@@ -1,10 +1,14 @@
 <?php
 include 'db.php';
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nombre = $_POST['nombre'];
     $raza = $_POST['raza'];
     $edad = $_POST['edad'];
+
+    if (isset($_SESSION['id_cliente'])) {
+        $id_cliente = $_SESSION['id_cliente'];
 
     try {
         $query = "INSERT INTO mascotas (nombre, raza, edad, id_cliente) VALUES (:nombre, :raza, :edad, :id_cliente)";
@@ -15,13 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bindParam(':id_cliente', $id_cliente);
 
         if ($stmt->execute()) {
-            echo "Mascota registrada con éxito.";
+            echo "Tu mascota registrada con éxito.";
         } else {
-            echo "Error al registrar la mascota.";
+            echo "Lo sentimos. Ha ocurrido un error al registrar la mascota.";
         }
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
     }
+}
 }
 ?>
 
@@ -48,10 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="text" name="raza" class="form-control" required>
             </div>
             <div class="mb-3">
-                <label class="form-label">Edad de la Mascota:</label>
-                <input type="number" name="edad" class="form-control" required>
+                <label class="form-label">Edad de la Mascota en Meses:</label>
+                <input type="number" name="edad" class="form-control" min="0" required>
+
             </div>
-            <button type="submit" class="btn btn-primary">Registrar Mascota</button>
+            <button type="submit" class="btn btn-warning text-dark">Registrar Mascota</button>
             <a href="dashboard.php" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
