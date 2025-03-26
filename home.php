@@ -144,7 +144,7 @@
    <!-- Testimonios de clientes -->
 <section class="testimonios py-5 bg-light">
     <div class="container">
-        <h2 class="text-center mb-5">Lo que dicen nuestros clientes</h2>
+        <h2 class="text-center mb-5">Calificaciones y reseñas</h2>
         <div class="row row-cols-1 row-cols-md-3 g-4">
             <!-- Testimonio 1 -->
             <div class="col">
