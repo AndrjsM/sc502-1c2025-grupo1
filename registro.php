@@ -17,10 +17,60 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header text-center">
-                        <h4>Registro de Usuario y Mascotas</h4>
+                        <h4>Registro de Usuario</h4>
                     </div>
                     <div class="card-body">
-                        <form action="/cliente/guardar" method="post" class="needs-validation" novalidate>
+                        <?php
+                        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                            require 'db.php';
+
+                            $identificacion = $_POST['identificacion'];
+                            $nombre = $_POST['nombre'];
+                            $primerApellido = $_POST['primerApellido'];
+                            $segundoApellido = $_POST['segundoApellido'];
+                            $correo = $_POST['correo'];
+                            $telefono = $_POST['telefono'];
+                            $password = $_POST['password'];
+                            $provincia = $_POST['provincia'];
+                            $canton = $_POST['canton'];
+                            $distrito = $_POST['distrito'];
+                            $direccionSennas = $_POST['direccionSennas'];
+
+                            try {
+                                $stmt = $conn->prepare("BEGIN registrarCliente(:identificacion, :nombre, :primerApellido, :correo, :telefono, :direccion, :password, :idCliente); END;");
+
+                                $stmt->bindParam(':identificacion', $identificacion);
+                                $stmt->bindParam(':nombre', $nombre);
+                                $stmt->bindParam(':primerApellido', $primerApellido);
+                                $stmt->bindParam(':correo', $correo);
+                                $stmt->bindParam(':telefono', $telefono);
+                                $stmt->bindParam(':direccion', $direccionSennas);
+                                $stmt->bindParam(':password', $password);
+
+                                $idCliente = null;
+                                $stmt->bindParam(':idCliente', $idCliente, PDO::PARAM_INT | PDO::PARAM_INPUT_OUTPUT, 32);
+
+                                $stmt->execute();
+
+                                session_start();
+                                $_SESSION['message'] = "Cliente registrado exitosamente. Por favor, inicie sesión.";
+                                header("Location: login.php");
+                                exit();
+                            } catch (PDOException $e) {
+                                session_start();
+                                if (strpos($e->getMessage(), '20010') !== false) {
+                                    $_SESSION['message'] = "La cédula o documento de identidad ya está registrada. Por favor, recupere su usuario y contraseña.";
+                                } elseif (strpos($e->getMessage(), '20011') !== false) {
+                                    $_SESSION['message'] = "El correo electrónico ya está registrado. Por favor, recupere su usuario y contraseña.";
+                                } else {
+                                    $_SESSION['message'] = "Error al registrar el cliente: " . $e->getMessage();
+                                }
+                                header("Location: login.php");
+                                exit();
+                            }
+                        }
+                        ?>
+                        <form action="registro.php" method="post" class="needs-validation" novalidate>
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="identificacion" class="form-label">Identificación</label>
@@ -140,56 +190,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <hr>
-                            <h4 class="text-center">Registro de Mascotas</h4>
-                            <div id="petContainer">
-                                <div class="pet-entry">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="petName" class="form-label">Nombre de la Mascota</label>
-                                            <input type="text" class="form-control" id="petName" name="petName[]"
-                                                placeholder="Ingrese el nombre de la mascota" required>
-                                            <div class="invalid-feedback">
-                                                Por favor, ingrese el nombre de la mascota.
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="petType" class="form-label">Tipo de Mascota</label>
-                                            <select class="form-control" id="petType" name="petType[]" required>
-                                                <option value="">Seleccione el tipo de mascota</option>
-                                                <option value="Perro">Perro</option>
-                                                <option value="Gato">Gato</option>
-                                                <option value="Ave">Ave</option>
-                                                <option value="Otro">Otro</option>
-                                            </select>
-                                            <div class="invalid-feedback">
-                                                Por favor, seleccione el tipo de mascota.
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <label for="petBreed" class="form-label">Raza</label>
-                                            <input type="text" class="form-control" id="petBreed" name="petBreed[]"
-                                                placeholder="Ingrese la raza de la mascota" required>
-                                            <div class="invalid-feedback">
-                                                Por favor, ingrese la raza de la mascota.
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <label for="petAge" class="form-label">Edad</label>
-                                            <input type="number" class="form-control" id="petAge" name="petAge[]"
-                                                placeholder="Ingrese la edad de la mascota" required>
-                                            <div class="invalid-feedback">
-                                                Por favor, ingrese la edad de la mascota.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="d-grid gap-2 col-6 mx-auto mb-3">
-                                <button type="button" class="btn btn-secondary" id="addPetButton">Agregar otra mascota</button>
-                            </div>
                             <div class="d-grid gap-2 col-6 mx-auto">
                                 <button type="submit" class="btn btn-primary">Registrar</button>
                             </div>
@@ -205,14 +205,11 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Example starter JavaScript for disabling form submissions if there are invalid fields
         (function() {
             'use strict'
 
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
             var forms = document.querySelectorAll('.needs-validation')
 
-            // Loop over them and prevent submission
             Array.prototype.slice.call(forms)
                 .forEach(function(form) {
                     form.addEventListener('submit', function(event) {
@@ -228,22 +225,12 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const provinciaSelect = document.getElementById('provincia');
-            console.log(provinciaSelect);
             const cantonSelect = document.getElementById('canton');
-            console.log(cantonSelect);
             const distritoSelect = document.getElementById('distrito');
-            console.log(distritoSelect);
 
-            // Fetch provinces
             fetch('https://api-geo-cr.vercel.app/provincias')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
-                    console.log(data); // Log the data to see its structure
                     if (Array.isArray(data.data)) {
                         data.data.forEach(provincia => {
                             const option = document.createElement('option');
@@ -251,136 +238,46 @@
                             option.textContent = provincia.descripcion;
                             provinciaSelect.appendChild(option);
                         });
-                    } else {
-                        console.error('Expected an array but got:', data);
                     }
-                })
-                .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
                 });
 
-            // Fetch all cantons based on selected province
             provinciaSelect.addEventListener('change', function() {
                 const provinciaId = this.value;
                 cantonSelect.innerHTML = '<option value="">Seleccione un cantón</option>';
                 distritoSelect.innerHTML = '<option value="">Seleccione un distrito</option>';
                 if (provinciaId) {
-                    fetchAllCantons(provinciaId);
+                    fetch(`https://api-geo-cr.vercel.app/provincias/${provinciaId}/cantones?limit=200`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (Array.isArray(data.data)) {
+                                data.data.forEach(canton => {
+                                    const option = document.createElement('option');
+                                    option.value = canton.idCanton;
+                                    option.textContent = canton.descripcion;
+                                    cantonSelect.appendChild(option);
+                                });
+                            }
+                        });
                 }
             });
 
-            // Fetch all districts based on selected canton
             cantonSelect.addEventListener('change', function() {
                 const cantonId = this.value;
                 distritoSelect.innerHTML = '<option value="">Seleccione un distrito</option>';
                 if (cantonId) {
-                    fetchAllDistricts(cantonId);
+                    fetch(`https://api-geo-cr.vercel.app/cantones/${cantonId}/distritos?limit=200`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (Array.isArray(data.data)) {
+                                data.data.forEach(distrito => {
+                                    const option = document.createElement('option');
+                                    option.value = distrito.idDistrito;
+                                    option.textContent = distrito.descripcion;
+                                    distritoSelect.appendChild(option);
+                                });
+                            }
+                        });
                 }
-            });
-
-            function fetchAllCantons(provinciaId) {
-                fetch(`https://api-geo-cr.vercel.app/provincias/${provinciaId}/cantones?limit=200`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok ' + response.statusText);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log(data); // Log the data to see its structure
-                        if (Array.isArray(data.data)) {
-                            data.data.forEach(canton => {
-                                const option = document.createElement('option');
-                                option.value = canton.idCanton;
-                                option.textContent = canton.descripcion;
-                                cantonSelect.appendChild(option);
-                            });
-                        } else {
-                            console.error('Expected an array but got:', data);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('There was a problem with the fetch operation:', error);
-                    });
-            }
-
-            function fetchAllDistricts(cantonId) {
-                fetch(`https://api-geo-cr.vercel.app/cantones/${cantonId}/distritos?limit=200`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok ' + response.statusText);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log(data); // Log the data to see its structure
-                        if (Array.isArray(data.data)) {
-                            data.data.forEach(distrito => {
-                                const option = document.createElement('option');
-                                option.value = distrito.idDistrito;
-                                option.textContent = distrito.descripcion;
-                                distritoSelect.appendChild(option);
-                            });
-                        } else {
-                            console.error('Expected an array but got:', data);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('There was a problem with the fetch operation:', error);
-                    });
-            }
-
-            // Add more pets functionality
-            const petContainer = document.getElementById('petContainer');
-            const addPetButton = document.getElementById('addPetButton');
-
-            addPetButton.addEventListener('click', function() {
-                const petEntry = document.createElement('div');
-                petEntry.classList.add('pet-entry');
-                petEntry.innerHTML = `
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="petName" class="form-label">Nombre de la Mascota</label>
-                            <input type="text" class="form-control" name="petName[]"
-                                placeholder="Ingrese el nombre de la mascota" required>
-                            <div class="invalid-feedback">
-                                Por favor, ingrese el nombre de la mascota.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="petType" class="form-label">Tipo de Mascota</label>
-                            <select class="form-control" name="petType[]" required>
-                                <option value="">Seleccione el tipo de mascota</option>
-                                <option value="Perro">Perro</option>
-                                <option value="Gato">Gato</option>
-                                <option value="Ave">Ave</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                            <div class="invalid-feedback">
-                                Por favor, seleccione el tipo de mascota.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="petBreed" class="form-label">Raza</label>
-                            <input type="text" class="form-control" name="petBreed[]"
-                                placeholder="Ingrese la raza de la mascota" required>
-                            <div class="invalid-feedback">
-                                Por favor, ingrese la raza de la mascota.
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="petAge" class="form-label">Edad</label>
-                            <input type="number" class="form-control" name="petAge[]"
-                                placeholder="Ingrese la edad de la mascota" required>
-                            <div class="invalid-feedback">
-                                Por favor, ingrese la edad de la mascota.
-                            </div>
-                        </div>
-                    </div>
-                `;
-                petContainer.appendChild(petEntry);
             });
         });
     </script>
