@@ -113,7 +113,6 @@
                             <li><i class="bi bi-phone me-2"></i>+506 1234 5678</li>
                             <li><i class="bi bi-clock me-2"></i>Lunes a Viernes: 8:00 AM - 6:00 PM</li>
                         </ul>
-                        <a href="#" class="btn btn-primary">Enviar mensaje</a>
                     </div>
                 </div>
             </div>
