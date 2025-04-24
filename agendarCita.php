@@ -59,7 +59,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include 'header.php'; ?>
 
 <div class="container my-5">
-    <h1 class="text-center">Agendar Cita</h1>
+<div class="text-center mb-4">
+    <img src="https://okvet.co/wp-content/uploads/2020/06/que-es-una-veterinaria.jpg" 
+         alt="Veterinaria" 
+         class="img-fluid rounded shadow" 
+         style="max-height: 250px; object-fit: cover;">
+</div>
+
+<h1 class="text-center" style="color: #ffc107;">Agendar Cita</h1>
+
+
 
     <?php if (!empty($aviso)) : ?>
         <div class="alert alert-info text-center">
