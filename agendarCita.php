@@ -13,6 +13,35 @@ error_log("ID Cliente: " . $id_cliente);
 
 $aviso = "";
 
+// Preparar datos para las opciones del formulario
+$mascotas = [];
+$veterinarios = [];
+$servicios = [];
+
+try {
+    $queryMascotas = "SELECT ID_MASCOTA, NOMBRE FROM usuarios_tablas.mascotas WHERE id_cliente = :id_cliente";
+    $stmtMascotas = $conn->prepare($queryMascotas);
+    $stmtMascotas->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
+    $stmtMascotas->execute();
+    $mascotas = $stmtMascotas->fetchAll(PDO::FETCH_ASSOC);
+    error_log("Mascotas: " . json_encode($mascotas));
+
+    $queryVeterinarios = "SELECT ID_VETERINARIO, NOMBRE FROM usuarios_tablas.veterinarios";
+    $stmtVeterinarios = $conn->prepare($queryVeterinarios);
+    $stmtVeterinarios->execute();
+    $veterinarios = $stmtVeterinarios->fetchAll(PDO::FETCH_ASSOC);
+    error_log("Veterinarios: " . json_encode($veterinarios));
+
+    $queryServicios = "SELECT ID_SERVICIO, NOMBRE_SERVICIO, DESCRIPCION FROM servicios_tablas.SERVICIOS";
+    $stmtServicios = $conn->prepare($queryServicios);
+    $stmtServicios->execute();
+    $servicios = $stmtServicios->fetchAll(PDO::FETCH_ASSOC);
+    error_log("Servicios: " . json_encode($servicios));
+
+} catch (PDOException $e) {
+    error_log("Error al preparar datos del formulario: " . $e->getMessage());
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_mascota = $_POST['id_mascota'] ?? null;
     $fecha = $_POST['fecha'] ?? null;
@@ -22,23 +51,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($id_mascota && $fecha && $hora && $servicio && $veterinario) {
         try {
-            $sql = "INSERT INTO citas (id_cliente, id_mascota, fecha, hora, servicio, veterinario) 
-                    VALUES (:id_cliente, :id_mascota, :fecha, :hora, :servicio, :veterinario)";
+            $fecha_cita = $fecha . ' ' . $hora; // Combinar fecha y hora
+
+            // Log para verificar los datos enviados al procedimiento
+            error_log("Datos enviados al procedimiento agendarCita:");
+            error_log("ID Cliente: " . $id_cliente);
+            error_log("ID Mascota: " . $id_mascota);
+            error_log("ID Veterinario: " . $veterinario);
+            error_log("Fecha Cita: " . $fecha_cita);
+            error_log("Servicios: " . implode(',', $servicio));
+
+            // Convertir los servicios seleccionados en una cadena separada por comas
+            $servicios_list = implode(',', $servicio);
+
+            // Llamar al procedimiento almacenado agendarCita
+            $sql = "BEGIN agendarCita(:id_cliente, :id_mascota, :id_veterinario, TO_DATE(:fecha_cita, 'YYYY-MM-DD HH24:MI'), :servicios); END;";
             $stmt = $conn->prepare($sql);
+
             $stmt->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
             $stmt->bindParam(':id_mascota', $id_mascota, PDO::PARAM_INT);
-            $stmt->bindParam(':fecha', $fecha);
-            $stmt->bindParam(':hora', $hora);
-            $stmt->bindParam(':servicio', $servicio);
-            $stmt->bindParam(':veterinario', $veterinario);
+            $stmt->bindParam(':id_veterinario', $veterinario, PDO::PARAM_INT);
+            $stmt->bindParam(':fecha_cita', $fecha_cita);
+            $stmt->bindParam(':servicios', $servicios_list);
 
-            if ($stmt->execute()) {
-                $aviso = "Cita agendada con éxito.";
-            } else {
-                $aviso = "Error. No se pudo agendar la cita.";
-            }
+            $stmt->execute();
+
+            $aviso = "Cita agendada con éxito.";
         } catch (PDOException $e) {
-            $aviso = "Error: " . $e->getMessage();
+            // Preparar mensajes de error amigables
+            if (strpos($e->getMessage(), 'ORA-20001') !== false) {
+                $aviso = "Error: El cliente no existe.";
+            } elseif (strpos($e->getMessage(), 'ORA-20002') !== false) {
+                $aviso = "Error: La mascota no existe.";
+            } elseif (strpos($e->getMessage(), 'ORA-20003') !== false) {
+                $aviso = "Error: La mascota no pertenece al cliente.";
+            } elseif (strpos($e->getMessage(), 'ORA-20004') !== false) {
+                $aviso = "Error: La mascota ya tiene una cita activa a la misma hora. La cita anterior ha sido cancelada.";
+            } elseif (strpos($e->getMessage(), 'ORA-20005') !== false) {
+                $aviso = "Error: El veterinario no existe.";
+            } elseif (strpos($e->getMessage(), 'ORA-20006') !== false) {
+                $aviso = "Error: El veterinario no está disponible en esa fecha y hora.";
+            } elseif (strpos($e->getMessage(), 'ORA-20007') !== false) {
+                $aviso = "Error: El servicio solicitado no es válido.";
+            } elseif (strpos($e->getMessage(), 'ORA-20008') !== false) {
+                $aviso = "Error: No hay suficiente stock para uno de los productos asociados al servicio.";
+            } else {
+                $aviso = "Error inesperado: " . $e->getMessage();
+            }
         }
     } else {
         $aviso = "Todos los campos son obligatorios.";
@@ -68,107 +127,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <h1 class="text-center" style="color: #ffc107;">Agendar Cita</h1>
 
+<?php if (!empty($aviso)) : ?>
+    <div class="alert alert-info text-center">
+        <?= htmlspecialchars($aviso) ?>
+    </div>
+<?php endif; ?>
 
+<form action="agendarCita.php" method="POST">
+    <!-- Mascotas -->
+    <div class="mb-3">
+        <label for="id_mascota" class="form-label">Selecciona la Mascota:</label>
+        <select name="id_mascota" id="id_mascota" class="form-select" required>
+            <option value="">-- Elige una mascota --</option>
+            <?php foreach ($mascotas as $mascota) : ?>
+                <option value="<?= htmlspecialchars($mascota['ID_MASCOTA']) ?>">
+                    <?= htmlspecialchars($mascota['NOMBRE']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
 
-    <?php if (!empty($aviso)) : ?>
-        <div class="alert alert-info text-center">
-            <?= htmlspecialchars($aviso) ?>
-        </div>
-    <?php endif; ?>
+    <!-- Fecha -->
+    <div class="mb-3">
+        <label for="fecha" class="form-label">Fecha:</label>
+        <input type="date" name="fecha" id="fecha" class="form-control" required>
+    </div>
 
-    <form action="agendarCita.php" method="POST">
-        <!-- Mascotas -->
-        <div class="mb-3">
-            <label for="id_mascota" class="form-label">Selecciona la Mascota:</label>
-            <select name="id_mascota" id="id_mascota" class="form-select" required>
-                <option value="">-- Elige una mascota --</option>
-                <?php
-                try {
-                    $query = "SELECT id_mascota, nombre FROM usuarios_tablas.mascotas WHERE id_cliente = :id_cliente";
-                    $stmt = $conn->prepare($query);
-                    $stmt->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
-                    $stmt->execute();
-                    $mascotas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                    if ($mascotas) {
-                        foreach ($mascotas as $m) {
-                            echo "<option value='" . htmlspecialchars($m['id_mascota']) . "'>" . htmlspecialchars($m['nombre']) . "</option>";
-                        }
-                    } else {
-                        echo "<option disabled>No tienes mascotas registradas</option>";
-                    }
-                } catch (PDOException $e) {
-                    echo "<option disabled>Error al cargar mascotas</option>";
+    <!-- Hora -->
+    <div class="mb-3">
+        <label for="hora" class="form-label">Hora:</label>
+        <select name="hora" id="hora" class="form-select" required>
+            <?php
+            for ($h = 8; $h <= 17; $h++) {
+                foreach (['00', '30'] as $min) {
+                    $time = sprintf("%02d:%s", $h, $min);
+                    echo "<option value='$time'>$time</option>";
                 }
-                ?>
-            </select>
-        </div>
+            }
+            ?>
+        </select>
+    </div>
 
-        <!-- Fecha -->
-        <div class="mb-3">
-            <label for="fecha" class="form-label">Fecha:</label>
-            <input type="date" name="fecha" id="fecha" class="form-control" required>
-        </div>
+    <!-- Servicios -->
+    <div class="mb-3">
+        <label for="servicios" class="form-label">Selecciona los Servicios:</label>
+        <?php foreach ($servicios as $serv) : ?>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="servicio[]" value="<?= htmlspecialchars($serv['ID_SERVICIO']) ?>" id="servicio_<?= htmlspecialchars($serv['ID_SERVICIO']) ?>">
+                <label class="form-check-label" for="servicio_<?= htmlspecialchars($serv['ID_SERVICIO']) ?>">
+                    <?= htmlspecialchars($serv['NOMBRE_SERVICIO']) ?>
+                </label>
+            </div>
+        <?php endforeach; ?>
+    </div>
 
-        <!-- Hora -->
-        <div class="mb-3">
-            <label for="hora" class="form-label">Hora:</label>
-            <select name="hora" id="hora" class="form-select" required>
-                <?php
-                for ($h = 8; $h <= 17; $h++) {
-                    foreach (['00', '30'] as $min) {
-                        $time = sprintf("%02d:%s", $h, $min);
-                        echo "<option value='$time'>$time</option>";
-                    }
-                }
-                ?>
-            </select>
-        </div>
+    <!-- Veterinarios -->
+    <div class="mb-3">
+        <label for="veterinario" class="form-label">Selecciona el Veterinario:</label>
+        <select name="veterinario" id="veterinario" class="form-select" required>
+            <?php foreach ($veterinarios as $v) : ?>
+                <option value="<?= htmlspecialchars($v['ID_VETERINARIO']) ?>">
+                    <?= htmlspecialchars($v['NOMBRE']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
 
-        <!-- Servicios -->
-        <div class="mb-3">
-            <label for="servicios" class="form-label">Selecciona los Servicios:</label>
-            <select name="servicios[]" id="servicios" class="form-select" multiple required>
-                <?php
-                $servicios = [
-                    "Atención de Emergencia",
-                    "Consulta Veterinaria",
-                    "Vacunación",
-                    "Cirugías & Procedimientos",
-                    "Estética y Spa",
-                    "Diagnóstico por Imágenes"
-                ];
-                foreach ($servicios as $serv) {
-                    echo "<option value='" . htmlspecialchars($serv) . "'>" . htmlspecialchars($serv) . "</option>";
-                }
-                ?>
-            </select>
-        </div>
-
-        <!-- Veterinarios -->
-        <div class="mb-3">
-            <label for="veterinario" class="form-label">Selecciona el Veterinario:</label>
-            <select name="veterinario" id="veterinario" class="form-select" required>
-                <?php
-                try {
-                    $query = "SELECT id_veterinario, nombre FROM usuarios_tablas.veterinarios";
-                    $stmt = $conn->prepare($query);
-                    $stmt->execute();
-                    $veterinarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                    foreach ($veterinarios as $v) {
-                        echo "<option value='" . $v['id_veterinario'] . "'>" . htmlspecialchars($v['nombre']) . "</option>";
-                    }
-                } catch (PDOException $e) {
-                    echo "<option disabled>Error al cargar veterinarios</option>";
-                }
-                ?>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Agendar Cita</button>
-        <a href="dashboard.php" class="btn btn-link mt-3">Volver al Dashboard</a>
-    </form>
+    <button type="submit" class="btn btn-primary">Agendar Cita</button>
+    <a href="dashboard.php" class="btn btn-link mt-3">Volver al Dashboard</a>
+</form>
 </div>
 
 <?php include 'footer.php'; ?>
