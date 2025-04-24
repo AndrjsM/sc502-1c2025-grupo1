@@ -95,6 +95,20 @@ BEGIN
 END;
 /
 
+CREATE SEQUENCE seq_id_mascota
+START WITH 1
+INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER trg_id_mascota
+BEFORE INSERT ON usuarios_tablas.mascotas
+FOR EACH ROW
+BEGIN
+    IF :NEW.id_mascota IS NULL THEN
+        :NEW.id_mascota := seq_id_mascota.NEXTVAL;
+    END IF;
+END;
+/
+
 -- 21/04/2025
 
 -- Inserción de veterinarios estéticos

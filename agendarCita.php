@@ -1,20 +1,25 @@
 <?php
 include('db.php');
 session_start();
-$id_cliente = $_SESSION['id_cliente'];
+$id_cliente = $_SESSION['cliente']['id_cliente'];
+error_log("ID Cliente: " . $id_cliente);
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $id_mascota = $_POST['id_mascota'];
     $fecha = $_POST['fecha'];
     $hora = $_POST['hora'];
+    $servicio = $_POST['servicio'];
+    $veterinario = $_POST['veterinario'];
 
     try {
-        $agendar = "INSERT INTO citas (id_cliente, id_mascota, fecha, hora) VALUES (:id_cliente, :id_mascota, :fecha, :hora)";
+        $agendar = "INSERT INTO citas (id_cliente, id_mascota, fecha, hora, servicio, veterinario) VALUES (:id_cliente, :id_mascota, :fecha, :hora, :servicio, :veterinario)";
         $stmt = $conn->prepare($agendar);
         $stmt->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
         $stmt->bindParam(':id_mascota', $id_mascota, PDO::PARAM_INT);
         $stmt->bindParam(':fecha', $fecha);
         $stmt->bindParam(':hora', $hora);
+        $stmt->bindParam(':servicio', $servicio);
+        $stmt->bindParam(':veterinario', $veterinario);
 
         if ($stmt->execute()) {
             $aviso = "Cita agendada con éxito.";
@@ -54,17 +59,32 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <select name="id_mascota" id="id_mascota" class="form-select" required>
                     <?php
                     try {
-                        $mascotasCliente = "SELECT * FROM mascotas WHERE id_cliente = :id_cliente";
-                        $stmt = $conn->prepare($mascotasCliente);
-                        $stmt->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
+                        $infoMascota = "SELECT
+                            m.id_mascota AS ID_Mascota,
+                            m.nombre AS Nombre_Mascota,
+                            m.especie AS Especie,
+                            m.raza AS Raza,
+                            m.meses AS Meses,
+                            c.nombre AS Nombre_Cliente,
+                            c.apellido AS Apellido_Cliente
+                        FROM
+                            usuarios_tablas.mascotas m
+                        JOIN
+                            usuarios_tablas.clientes c
+                        ON
+                            m.id_cliente = c.id_cliente
+                        WHERE
+                            m.id_cliente = :id_cliente";
+                        $stmt = $conn->prepare($infoMascota);
+                        $stmt->bindParam(':id_cliente', $id_cliente);
                         $stmt->execute();
                         $resultadoMascotas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         if (empty($resultadoMascotas)) {
                             echo "<option value=''>No tienes mascotas registradas</option>";
                         } else {
-                            foreach ($resultadoMascotas as $row) {
-                                echo "<option value='".$row['id_mascota']."'>".$row['nombre']."</option>";
+                            foreach ($resultadoMascotas as $mascota) {
+                                echo "<option value='" . $mascota['ID_Mascota'] . "'>" . htmlspecialchars($mascota['NOMBRE_MASCOTA']) . "</option>";
                             }
                         }
                     } catch (PDOException $e) {
@@ -81,7 +101,39 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
             <div class="mb-3">
                 <label for="hora" class="form-label">Hora:</label>
-                <input type="time" name="hora" id="hora" class="form-control" required min="08:00" max="18:00">
+                <input type="time" name="hora" id="hora" class="form-control" required min="08:00" max="17:00">
+            </div>
+
+            <div class="mb-3">
+                <label for="servicio" class="form-label">Selecciona el Servicio:</label>
+                <select name="servicio" id="servicio" class="form-select" required>
+                    <?php
+                    $servicios = ["Consulta General", "Vacunación", "Desparasitación", "Cirugía", "Baño y Corte"];
+                    foreach ($servicios as $servicio) {
+                        echo "<option value='" . htmlspecialchars($servicio) . "'>" . htmlspecialchars($servicio) . "</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="veterinario" class="form-label">Selecciona el Veterinario:</label>
+                <select name="veterinario" id="veterinario" class="form-select" required>
+                    <?php
+                    try {
+                        $queryVeterinarios = "SELECT id_veterinario, nombre FROM usuarios_tablas.veterinarios";
+                        $stmt = $conn->prepare($queryVeterinarios);
+                        $stmt->execute();
+                        $veterinarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        foreach ($veterinarios as $veterinario) {
+                            echo "<option value='" . $veterinario['id_veterinario'] . "'>" . htmlspecialchars($veterinario['nombre']) . "</option>";
+                        }
+                    } catch (PDOException $e) {
+                        echo "<option value=''>Error al cargar veterinarios</option>";
+                    }
+                    ?>
+                </select>
             </div>
 
             <button type="submit" class="btn btn-primary">Agendar Cita</button>
@@ -91,6 +143,25 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     </div>
     
     <?php include 'footer.php'; ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        const dateInput = document.getElementById('fecha');
+        const today = new Date();
+        const day = today.getDay();
+
+        // Set minimum date to today
+        dateInput.min = today.toISOString().split('T')[0];
+
+        // Disable weekends
+        dateInput.addEventListener('input', function () {
+            const selectedDate = new Date(this.value);
+            const selectedDay = selectedDate.getDay();
+            if (selectedDay === 0 || selectedDay === 6) {
+                alert('Por favor selecciona un día entre lunes y viernes.');
+                this.value = '';
+            }
+        });
+    </script>
 </body>
 </html>
 
