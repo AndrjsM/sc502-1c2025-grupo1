@@ -28,7 +28,7 @@
   <style>
     /* Banner de servicios */
     .services-banner {
-      background: url('https://www.consalud.es/animalcare/uploads/s1/25/04/50/3/mascotas.jpeg') no-repeat center center;
+      background: url('https://img.freepik.com/premium-photo/husky-dog-portrait-beautiful-photo-selective-focus_73944-25165.jpg?w=1380') no-repeat center center;
       background-size: cover;
       height: 450px;
       display: flex;

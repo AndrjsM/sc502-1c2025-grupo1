@@ -12,7 +12,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.2/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
         .banner {
-            background: url('https://img.freepik.com/foto-gratis/vista-frontal-hermoso-perro-espacio-copia_23-2148786560.jpg?t=st=1741669395~exp=1741672995~hmac=14b1d4b75eeb86cd027c3840dc72b34813358280e29c8b310ddf01488929d360&w=1380') no-repeat center center;
+            background: url('https://img.freepik.com/premium-photo/close-up-dog-against-yellow-background_1048944-3568010.jpg?w=1380') no-repeat center center;
             background-size: cover;
             height: 400px;
             display: flex;
