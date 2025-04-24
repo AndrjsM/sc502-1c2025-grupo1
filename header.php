@@ -12,48 +12,49 @@ error_log("Nombre del cliente: " . $nombre);
 ?>
 
 <header>
-    <nav class="navbar navbar-expand-lg" aria-label="Eighth navbar example">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #ff8c00, #ff6b00); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
         <div class="container d-flex align-items-center">
             <div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <a class="navbar-brand ms-2" href="home.php">
-                    <!-- <img src="logo.png" alt="Logo" style="width: 30px; height: 30px;"> -->
-                    Patitas al rescate
+                <a class="navbar-brand ms-2 d-flex align-items-center" href="home.php">
+                    <i class="bi bi-heart-pulse me-2"></i>
+                    <span class="fw-bold">Patitas al rescate</span>
                 </a>
             </div>
 
             <div class="col-md-3 text-end d-lg-none">
                 <?php if ($clienteLogueado): ?>
                     <div class="dropdown text-end">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <?php echo htmlspecialchars($nombre); ?>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="dashboard.php">Ir al Dashboard</a></li>
-                            <li><a class="dropdown-item" href="logout.php">Cerrar Sesión</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end" style="background-color: #ff8c00;">
+                            <li><a class="dropdown-item text-white" href="dashboard.php">Ir al Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-white" href="logout.php">Cerrar Sesión</a></li>
                         </ul>
                     </div>
                 <?php else: ?>
-                    <a href="login.php" type="button" class="btn btn-outline-primary">Iniciar sesión</a>
-                    <a href="registro.php" type="button" class="btn btn-secondary ms-2">Registrarse</a>
+                    <a href="login.php" type="button" class="btn btn-outline-light">Iniciar sesión</a>
+                    <a href="registro.php" type="button" class="btn btn-light ms-2" style="color: #ff6b00;">Registrarse</a>
                 <?php endif; ?>
             </div>
 
             <div class="collapse navbar-collapse" id="navbarsExample07">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="home.php">Home</a>
+                        <a class="nav-link active px-3 py-2 rounded" aria-current="page" href="home.php">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="servicios.php">Servicios</a>
+                        <a class="nav-link px-3 py-2 rounded" href="servicios.php">Servicios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="ubicacion.php">Ubicacion</a>
+                        <a class="nav-link px-3 py-2 rounded" href="ubicacion.php">Ubicación</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="contactenos.php">Contactenos</a>
+                        <a class="nav-link px-3 py-2 rounded" href="contactenos.php">Contáctenos</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="agregarMascota.php">Agregar Mascota</a>
@@ -66,17 +67,18 @@ error_log("Nombre del cliente: " . $nombre);
                 <div class="col-md-3 text-end d-none d-lg-block">
                     <?php if ($clienteLogueado): ?>
                         <div class="dropdown text-end">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <?php echo htmlspecialchars($nombre); ?>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="dashboard.php">Ir al Dashboard</a></li>
-                                <li><a class="dropdown-item" href="logout.php">Cerrar Sesión</a></li>
+                            <ul class="dropdown-menu dropdown-menu-end" style="background-color: #ff8c00;">
+                                <li><a class="dropdown-item text-white" href="dashboard.php">Ir al Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-white" href="logout.php">Cerrar Sesión</a></li>
                             </ul>
                         </div>
                     <?php else: ?>
-                        <a href="login.php" type="button" class="btn btn-outline-primary">Iniciar sesión</a>
-                        <a href="registro.php" type="button" class="btn btn-secondary ms-2">Registrarse</a>
+                        <a href="login.php" type="button" class="btn btn-outline-light">Iniciar sesión</a>
+                        <a href="registro.php" type="button" class="btn btn-light ms-2" style="color: #ff6b00;">Registrarse</a>
                     <?php endif; ?>
                 </div>
             </div>

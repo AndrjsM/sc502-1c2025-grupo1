@@ -20,14 +20,18 @@
   
   <style>
 .contact-banner {
-  background: #222 url('https://st2.depositphotos.com/7413918/10228/i/450/depositphotos_102282272-stock-photo-fun-dog-cartoon-character-with.jpg') no-repeat center center;
-  background-size: contain;
-  height: 350px;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+              url('https://img.freepik.com/free-photo/adorable-white-bulldog-puppy-portrait-social-banner_53876-160763.jpg?t=st=1745534716~exp=1745538316~hmac=12be47b2d52f9db77437d59b39b61679c1110dfca142332cfeaae6887ba7ae01&w=1380') no-repeat center center;
+  background-size: cover;
+  height: 400px; /* Altura ajustada para mejor visualización */
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  position: relative;
+  overflow: hidden;
 }
 
     .contact-banner h1 {
