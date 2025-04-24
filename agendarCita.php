@@ -4,31 +4,46 @@ session_start();
 $id_cliente = $_SESSION['cliente']['id_cliente'];
 error_log("ID Cliente: " . $id_cliente);
 
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $id_mascota = $_POST['id_mascota'];
-    $fecha = $_POST['fecha'];
-    $hora = $_POST['hora'];
-    $servicio = $_POST['servicio'];
-    $veterinario = $_POST['veterinario'];
+// Preload data for the form
+$mascotas = [];
+$veterinarios = [];
+$servicios = [];
 
-    try {
-        $agendar = "INSERT INTO citas (id_cliente, id_mascota, fecha, hora, servicio, veterinario) VALUES (:id_cliente, :id_mascota, :fecha, :hora, :servicio, :veterinario)";
-        $stmt = $conn->prepare($agendar);
-        $stmt->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
-        $stmt->bindParam(':id_mascota', $id_mascota, PDO::PARAM_INT);
-        $stmt->bindParam(':fecha', $fecha);
-        $stmt->bindParam(':hora', $hora);
-        $stmt->bindParam(':servicio', $servicio);
-        $stmt->bindParam(':veterinario', $veterinario);
+try {
+    // Fetch mascotas
+    $infoMascota = "SELECT id_mascota, nombre FROM usuarios_tablas.mascotas WHERE id_cliente = :id_cliente";
+    $stmt = $conn->prepare($infoMascota);
+    $stmt->bindParam(':id_cliente', $id_cliente);
+    $stmt->execute();
+    $mascotas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    error_log("Mascotas: " . print_r($mascotas, true));
+} catch (PDOException $e) {
+    error_log("Error al cargar mascotas: " . $e->getMessage());
+}
 
-        if ($stmt->execute()) {
-            $aviso = "Cita agendada con éxito.";
-        } else {
-            $aviso = "Error. No se agendó la cita.";
-        }
-    } catch (PDOException $e) {
-        $aviso = "Error: " . $e->getMessage();
-    }
+try {
+    // Fetch veterinarios
+    $queryVeterinarios = "SELECT ID_VETERINARIO, NOMBRE FROM usuarios_tablas.veterinarios";
+    $stmt = $conn->prepare($queryVeterinarios);
+    $stmt->execute();
+    $veterinarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    error_log("Veterinarios: " . print_r($veterinarios, true));
+} catch (PDOException $e) {
+    error_log("Error al cargar veterinarios: " . $e->getMessage());
+}
+
+// Fetch services before rendering the form
+try {
+    $queryServicios = "SELECT ID_SERVICIO, NOMBRE_SERVICIO, DURACION_MINUTOS FROM servicios_tablas.servicios";
+    $stmt = $conn->prepare($queryServicios);
+    $stmt->execute();
+    $servicios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Log the fetched services for debugging
+    error_log("Servicios disponibles: " . print_r($servicios, true));
+} catch (PDOException $e) {
+    error_log("Error al cargar servicios: " . $e->getMessage());
+    $servicios = [];
 }
 ?>
 
@@ -58,37 +73,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             <label for="id_mascota" class="form-label">Selecciona la Mascota:</label>
             <select name="id_mascota" id="id_mascota" class="form-select" required>
                 <?php
-                try {
-                    $infoMascota = "SELECT
-                        m.id_mascota AS ID_Mascota,
-                        m.nombre AS Nombre_Mascota,
-                        m.especie AS Especie,
-                        m.raza AS Raza,
-                        m.meses AS Meses,
-                        c.nombre AS Nombre_Cliente,
-                        c.apellido AS Apellido_Cliente
-                    FROM
-                        usuarios_tablas.mascotas m
-                    JOIN
-                        usuarios_tablas.clientes c
-                    ON
-                        m.id_cliente = c.id_cliente
-                    WHERE
-                        m.id_cliente = :id_cliente";
-                    $stmt = $conn->prepare($infoMascota);
-                    $stmt->bindParam(':id_cliente', $id_cliente);
-                    $stmt->execute();
-                    $resultadoMascotas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                    if (empty($resultadoMascotas)) {
-                        echo "<option value=''>No tienes mascotas registradas</option>";
-                    } else {
-                        foreach ($resultadoMascotas as $mascota) {
-                            echo "<option value='" . $mascota['ID_Mascota'] . "'>" . htmlspecialchars($mascota['Nombre_Mascota']) . "</option>";
-                        }
+                if (empty($mascotas)) {
+                    echo "<option value=''>No tienes mascotas registradas</option>";
+                } else {
+                    foreach ($mascotas as $mascota) {
+                        echo "<option value='" . $mascota['ID_MASCOTA'] . "'>" . htmlspecialchars($mascota['NOMBRE']) . "</option>";
                     }
-                } catch (PDOException $e) {
-                    echo "<option value=''>Error al cargar mascotas</option>";
                 }
                 ?>
             </select>
@@ -105,12 +95,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         </div>
 
         <div class="mb-3">
-            <label for="servicio" class="form-label">Selecciona el Servicio:</label>
-            <select name="servicio" id="servicio" class="form-select" required>
+            <label for="servicios" class="form-label">Selecciona los Servicios:</label>
+            <select name="servicios[]" id="servicios" class="form-select" multiple required>
                 <?php
-                $servicios = ["Consulta General", "Vacunación", "Desparasitación", "Cirugía", "Baño y Corte"];
-                foreach ($servicios as $serv) {
-                    echo "<option value='" . htmlspecialchars($serv) . "'>" . htmlspecialchars($serv) . "</option>";
+                if (!empty($servicios)) {
+                    foreach ($servicios as $servicio) {
+                        echo "<option value='" . htmlspecialchars($servicio['ID_SERVICIO']) . "'>" . htmlspecialchars($servicio['NOMBRE_SERVICIO']) . " (" . htmlspecialchars($servicio['DURACION_MINUTOS']) . " horas)</option>";
+                    }
+                } else {
+                    echo "<option value=''>No hay servicios disponibles</option>";
                 }
                 ?>
             </select>
@@ -120,17 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             <label for="veterinario" class="form-label">Selecciona el Veterinario:</label>
             <select name="veterinario" id="veterinario" class="form-select" required>
                 <?php
-                try {
-                    $queryVeterinarios = "SELECT id_veterinario, nombre FROM usuarios_tablas.veterinarios";
-                    $stmt = $conn->prepare($queryVeterinarios);
-                    $stmt->execute();
-                    $veterinarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                    foreach ($veterinarios as $veterinario) {
-                        echo "<option value='" . $veterinario['id_veterinario'] . "'>" . htmlspecialchars($veterinario['nombre']) . "</option>";
-                    }
-                } catch (PDOException $e) {
-                    echo "<option value=''>Error al cargar veterinarios</option>";
+                foreach ($veterinarios as $veterinario) {
+                    echo "<option value='" . $veterinario['ID_VETERINARIO'] . "'>" . htmlspecialchars($veterinario['NOMBRE']) . "</option>";
                 }
                 ?>
             </select>
