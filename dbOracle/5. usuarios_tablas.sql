@@ -128,3 +128,18 @@ INSERT INTO MASCOTAS (
 );
 
 commit;
+
+CREATE SEQUENCE seq_id_veterinario
+START WITH 1
+INCREMENT BY 1;
+
+CREATE OR REPLACE TRIGGER trg_id_veterinario
+BEFORE INSERT ON usuarios_tablas.veterinarios
+FOR EACH ROW
+BEGIN
+    IF :NEW.id_veterinario IS NULL THEN
+        :NEW.id_veterinario := seq_id_veterinario.NEXTVAL;
+    END IF;
+END;
+/
+

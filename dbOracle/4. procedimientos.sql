@@ -425,3 +425,24 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Cliente registrado con éxito. ID del cliente: ' || v_ID_Cliente);
 END;
 /
+--24/04/2025
+-- Datos de prueba
+DECLARE
+    v_ID_Cliente NUMBER := 41; -- Reemplaza con el ID del cliente
+    v_ID_Mascota NUMBER := 1; -- Reemplaza con el ID de la mascota
+    v_ID_Veterinario NUMBER := 1; -- Reemplaza con el ID del veterinario
+    v_Fecha_Cita DATE := TO_DATE('2025-04-30', 'YYYY-MM-DD'); -- Reemplaza con la fecha deseada
+    v_Servicios SYS.ODCINUMBERLIST := SYS.ODCINUMBERLIST(3, 4); -- Reemplaza con los IDs de los servicios
+BEGIN
+    -- Llamar al procedimiento para agendar la cita
+    agendarCita(
+        p_ID_Cliente => v_ID_Cliente,
+        p_ID_Mascota => v_ID_Mascota,
+        p_ID_Veterinario => v_ID_Veterinario,
+        p_Fecha_Cita => v_Fecha_Cita,
+        p_Servicios => v_Servicios
+    );
+
+    DBMS_OUTPUT.PUT_LINE('Cita agendada exitosamente.');
+END;
+/
