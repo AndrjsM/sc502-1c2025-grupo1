@@ -1,7 +1,7 @@
 <?php
 $host = "localhost"; // Cambia esto si tu servidor Oracle está en otro host
 $port = "1521"; // Puerto predeterminado de Oracle
-$service_name = "ORCL"; // Cambia esto por el nombre del servicio de tu base de datos
+$service_name = "xe"; // Cambia esto por el nombre del servicio de tu base de datos
 $user = "Usuarios_Tablas";
 $password = "Usuarios_Tablas";
 

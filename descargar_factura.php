@@ -64,7 +64,7 @@
   <div class="container">
     <div class="icon">🔧</div>
     <h1>¡Estamos trabajando en ello!</h1>
-    <p>La opción para editar su perfil estará disponible muy pronto.<br> ¡Gracias por su paciencia!</p>
+    <p>La opción para descargar su factura estará disponible muy pronto.<br> ¡Gracias por su paciencia!</p>
     <a href="home.php" class="btn">← Volver al Inicio</a>
   </div>
 </body>
