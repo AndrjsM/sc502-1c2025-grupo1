@@ -113,13 +113,13 @@ WHERE
             margin-bottom: 20px;
         }
 
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 20px;
-            font-size: 0.9rem;
-        }
+       //.btn-primary {
+         //background-color: #007bff;
+           // border: none;
+            //border-radius: 20px;
+            //padding: 10px 20px;
+            //font-size: 0.9rem;
+        //}
 
         .btn-primary:hover {
             background-color: #0056b3;
@@ -168,7 +168,7 @@ WHERE
                             <p><strong>Teléfono:</strong> <?php echo htmlspecialchars($cliente['telefono']); ?></p>
                         </div>
                         <div class="col-md-6 text-end">
-                            <a href="editarPerfil.php" class="btn btn-primary">Editar Perfil</a>
+                            <a href="proximamente.php" class="btn btn-warning">Editar Perfil</a>
                         </div>
                     </div>
                 </div>
@@ -179,7 +179,7 @@ WHERE
         <section class="mb-5">
             <div class="d-flex justify-content-between align-items-center my-2">
                 <h2 class="section-title">Mascotas</h2>
-                <a href="agregarMascota.php" class="btn btn-primary">Agregar Mascota</a>
+                <a href="agregarMascota.php" class="btn btn-warning">Agregar Mascota</a>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -205,7 +205,7 @@ WHERE
                                     <td><?php echo htmlspecialchars($mascota['RAZA'] ?? 'No disponible'); ?></td>
                                     <td><?php echo htmlspecialchars($mascota['MESES'] ?? 'No disponible'); ?></td>
                                     <td>
-                                        <a href="editarMascota.php?id=<?php echo $mascota['ID_MASCOTA'] ?? ''; ?>" class="btn btn-info btn-sm">Editar</a>
+                                        <a href="editarMascota.php?id=<?php echo $mascota['ID_MASCOTA'] ?? ''; ?>" class="btn btn-primary btn-sm">Editar</a>
                                         <a href="eliminarMascota.php?id=<?php echo $mascota['ID_MASCOTA'] ?? ''; ?>" class="btn btn-danger btn-sm" onclick="return confirmarEliminacion('<?php echo addslashes($mascota['NOMBRE_MASCOTA'] ?? ''); ?>')">Eliminar</a>
                                     </td>
                                 </tr>
@@ -220,7 +220,7 @@ WHERE
         <section class="mb-5">
             <div class="d-flex justify-content-between align-items-center my-2">
                 <h2 class="section-title">Citas Agendadas</h2>
-                <a href="agendarCita.php" class="btn btn-primary">Agendar Nueva Cita</a>
+                <a href="agendarCita.php" class="btn btn-warning">Agendar Nueva Cita</a>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped">
