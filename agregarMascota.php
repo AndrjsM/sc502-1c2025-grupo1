@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <div class="container my-5">
                 <div class="text-center mb-4">
-                    <img src="https://us.123rf.com/450wm/peopleimages12/peopleimages122212/peopleimages12221217279/195752611-cordero-animal-beb%C3%A9-y-mujer-veterinaria-en-una-granja-o-zool%C3%B3gico-para-la-salud-y-el-bienestar-de.jpg?ver=6" 
+                    <img src="https://img.freepik.com/premium-photo/close-up-australian-shepherd-dog-with-blue-pastel-background-dog-fashion-photo-generative-ai_796128-1443.jpg?w=1380" 
                     alt="Veterinaria"
                     class="img-fluid rounded shadow" style="max-height: 350px; object-fit: cover;">
                 </div>
