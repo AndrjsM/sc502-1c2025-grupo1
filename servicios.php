@@ -68,7 +68,7 @@
     <div class="text-center">
       <h1>Servicios Especializados</h1>
       <p class="lead">Cuidamos de tus mascotas con profesionalismo y pasión</p>
-      <a href="agenda.php" class="btn btn-lg btn-primary mt-3">Agenda tu Cita</a>
+      <a href="agendarCita.php" class="btn btn-lg btn-primary mt-3">Agenda tu Cita</a>
     </div>
   </section>
 
@@ -100,7 +100,7 @@
               <i class="bi bi-stethoscope icon-large text-primary mb-3" aria-hidden="true"></i>
               <h4 class="card-title">Consulta Veterinaria</h4>
               <p class="card-text">Evaluación médica completa, diagnósticos y tratamientos personalizados para la salud de tus mascotas.</p>
-              <a href="agenda.php" class="btn btn-primary">Agendar Cita</a>
+              <a href="agendarCita.php" class="btn btn-primary">Agendar Cita</a>
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@
               <i class="bi bi-shield-check icon-large text-success mb-3" aria-hidden="true"></i>
               <h4 class="card-title">Vacunación</h4>
               <p class="card-text">Programas de vacunación completos para proteger a tus mascotas en cada etapa de su vida.</p>
-              <a href="agenda.php" class="btn btn-success">Agendar Cita</a>
+              <a href="agendarCita.php" class="btn btn-success">Agendar Cita</a>
             </div>
           </div>
         </div>
@@ -124,7 +124,7 @@
               <i class="bi bi-heart-pulse icon-large text-danger mb-3" aria-hidden="true"></i>
               <h4 class="card-title">Cirugías &amp; Procedimientos</h4>
               <p class="card-text">Intervenciones quirúrgicas y tratamientos avanzados en un ambiente seguro y profesional.</p>
-              <a href="agenda.php" class="btn btn-danger">Agendar Cita</a>
+              <a href="agendarCita.php" class="btn btn-danger">Agendar Cita</a>
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@
               <i class="bi bi-scissors icon-large text-warning mb-3" aria-hidden="true"></i>
               <h4 class="card-title">Estética y Spa</h4>
               <p class="card-text">Baños, cortes, tratamientos de spa y más para que tu mascota luzca radiante.</p>
-              <a href="agenda.php" class="btn btn-warning">Agendar Cita</a>
+              <a href="agendarCita.php" class="btn btn-warning">Agendar Cita</a>
             </div>
           </div>
         </div>
@@ -148,7 +148,7 @@
               <i class="bi bi-camera icon-large text-info mb-3" aria-hidden="true"></i>
               <h4 class="card-title">Diagnóstico por Imágenes</h4>
               <p class="card-text">Utilizamos tecnología de punta para ofrecer diagnósticos precisos y confiables.</p>
-              <a href="agenda.php" class="btn btn-info">Agendar Cita</a>
+              <a href="agendarCita.php" class="btn btn-info">Agendar Cita</a>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@
               <i class="bi bi-exclamation-triangle icon-large text-warning mb-3" aria-hidden="true"></i>
               <h4 class="card-title">Atención de Emergencia</h4>
               <p class="card-text">Servicio 24/7 para atender emergencias y brindar asistencia inmediata.</p>
-              <a href="agenda.php" class="btn btn-warning">Agendar Cita</a>
+              <a href="agendarCita.php" class="btn btn-warning">Agendar Cita</a>
             </div>
           </div>
         </div>
