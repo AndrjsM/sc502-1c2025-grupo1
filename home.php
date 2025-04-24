@@ -67,7 +67,7 @@
                         <li><i class="bi bi-check-circle text-success"></i> Diagnóstico por imágenes</li>
                         <li><i class="bi bi-check-circle text-success"></i> Hospitalización</li>
                     </ul>
-                    <a href="#" class="btn btn-primary">Más información</a>
+                    <a href="servicios.php" class="btn btn-primary">Más información</a>
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
                         <li><i class="bi bi-check-circle text-success"></i> Limpieza dental</li>
                         <li><i class="bi bi-check-circle text-success"></i> Perfumería para mascotas</li>
                     </ul>
-                    <a href="#" class="btn btn-warning">Más información</a>
+                    <a href="servicios.php" class="btn btn-warning">Más información</a>
                 </div>
             </div>
         </div>
