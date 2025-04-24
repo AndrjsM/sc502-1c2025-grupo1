@@ -28,7 +28,7 @@
   <style>
     /* Banner de Ubicación */
     .location-banner {
-      background: url('https://img.freepik.com/foto-gratis/mapa-vista-superior-sobre-fondo-azul_23-2148786160.jpg') no-repeat center center;
+      background: url('https://img.freepik.com/premium-photo/concept-plastic-waste-pollution-from-plastic-waste-discarded-plastic-bags-black-backgroun_1066580-1557.jpg?w=1380') no-repeat center center;
       background-size: cover;
       height: 300px;
       display: flex;

@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,52 +47,64 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-color: #f8f9fa;
             font-family: 'Roboto', sans-serif;
         }
-        
     </style>
 </head>
+
 <body>
     <?php include 'header.php'; ?>
 
     <div class="container py-5 px-5 my-5 shadow mx-auto rounded-3">
         <div class="form-container">
-            <h2 class="form-title text-center">Registrar Mascota</h2>
 
-            <form method="POST">
-                <div class="mb-3">
-                    <label class="form-label">Nombre de la Mascota:</label>
-                    <input type="text" name="nombre" class="form-control" placeholder="Ejemplo: Max" required>
+            <div class="container my-5">
+                <div class="text-center mb-4">
+                    <img src="https://us.123rf.com/450wm/peopleimages12/peopleimages122212/peopleimages12221217279/195752611-cordero-animal-beb%C3%A9-y-mujer-veterinaria-en-una-granja-o-zool%C3%B3gico-para-la-salud-y-el-bienestar-de.jpg?ver=6" 
+                    alt="Veterinaria"
+                    class="img-fluid rounded shadow" style="max-height: 350px; object-fit: cover;">
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Especie:</label>
-                    <select name="especie" class="form-select" required>
-                        <option value="Perro">Perro</option>
-                        <option value="Gato">Gato</option>
-                        <option value="Conejo">Conejo</option>
-                        <option value="Hámster">Hamster</option>
-                        <option value="Ave">Ave</option>
-                        <option value="Caballo">Caballo</option>
-                        <option value="Vaca">Vaca</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Raza de la Mascota:</label>
-                    <input type="text" name="raza" class="form-control" placeholder="Ejemplo: Labrador" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Edad de la Mascota en Meses:</label>
-                    <input type="number" name="edad" class="form-control" min="0" placeholder="Ejemplo: 12" required>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <button type="submit" class="btn btn-primary">Registrar Mascota</button>
-                    <a href="dashboard.php" class="btn btn-secondary">Cancelar</a>
-                </div>
-            </form>
+                <h1 class="text-center" style="color: #277e1c;">Agregar Mascota</h1>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la Mascota:</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Ejemplo: Max" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Especie:</label>
+                        <select name="especie" class="form-select" required>
+                            <option value="Perro">Perro</option>
+                            <option value="Gato">Gato</option>
+                            <option value="Conejo">Conejo</option>
+                            <option value="Hámster">Hamster</option>
+                            <option value="Ave">Ave</option>
+                            <option value="Caballo">Caballo</option>
+                            <option value="Vaca">Vaca</option>
+                            <option value="Oveja">Oveja</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Raza de la Mascota:</label>
+                        <input type="text" name="raza" class="form-control" placeholder="Ejemplo: Labrador" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Edad de la Mascota en Meses:</label>
+                        <input type="number" name="edad" class="form-control" min="0" placeholder="Ejemplo: 12"
+                            required>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Registrar Mascota</button>
+                        <a href="dashboard.php" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <?php include 'footer.php'; ?>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+        <?php include 'footer.php'; ?>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
 </body>
+
 </html>
 
 <?php $conn = null; ?>
