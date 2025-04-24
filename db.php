@@ -1,7 +1,7 @@
 <?php
 $host = "localhost"; // Cambia esto si tu servidor Oracle está en otro host
 $port = "1521"; // Puerto predeterminado de Oracle
-$service_name = "ORCL"; // Cambia esto por el nombre del servicio de tu base de datos
+$service_name = "xe"; // Cambia esto por el nombre del servicio de tu base de datos
 $user = "Progra_PAR";
 $password = "Progra_PAR";
 
@@ -13,7 +13,7 @@ try {
     $conn = new PDO($dsn, $user, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    echo "Conexión exitosa con el usuario Progra_PAR.";
+    error_log("Conexión exitosa con el usuario Progra_PAR.") ;
 } catch (PDOException $e) {
     die("Error de conexión: " . $e->getMessage());
 }

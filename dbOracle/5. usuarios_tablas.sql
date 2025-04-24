@@ -106,3 +106,11 @@ VALUES (2, 'VET987654321', 'Dra. María López', 'Estética Felina', '88885678',
 
 INSERT INTO veterinarios (id_veterinario, didentidad_veterinario, nombre, especialidad, telefono, correo, rol)
 VALUES (3, 'VET456789123', 'Dr. Carlos Ramírez', 'Estética General', '88889012', 'carlos.ramirez@veterinaria.com', 'Estético');
+
+INSERT INTO MASCOTAS (
+    ID_MASCOTA, ID_CLIENTE, NOMBRE, ESPECIE, RAZA, MESES, HISTORIAL_MEDICA
+) VALUES (
+    1, 41, 'Max', 'Perro', 'Golden Retriever', 24, EMPTY_CLOB()
+);
+
+commit;

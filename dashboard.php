@@ -49,11 +49,30 @@ try {
     error_log("Datos del cliente: " . print_r($datosCliente, true)); // Para depuración
 
     // Mascotas
-    $infoMascota = "SELECT * FROM mascotas WHERE id_cliente = :id_cliente";
+    $infoMascota = "SELECT 
+    m.id_mascota AS ID_Mascota,
+    m.nombre AS Nombre_Mascota,
+    m.especie AS Especie,
+    m.raza AS Raza,
+    m.meses AS Meses,
+    c.nombre AS Nombre_Cliente,
+    c.apellido AS Apellido_Cliente
+FROM 
+    usuarios_tablas.mascotas m
+JOIN 
+    usuarios_tablas.clientes c 
+ON 
+    m.id_cliente = c.id_cliente
+WHERE 
+    m.id_cliente = :id_cliente";
     $stmt = $conn->prepare($infoMascota);
     $stmt->bindParam(':id_cliente', $id_cliente);
     $stmt->execute();
     $resultadoMascotas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Agregar un error_log para verificar el contenido de $resultadoMascotas
+    error_log('Contenido de resultadoMascotas: ' . print_r($resultadoMascotas, true));
+
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
     exit();
@@ -71,16 +90,19 @@ try {
     <style>
         .card {
             margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
         .table-responsive {
             overflow-x: auto;
         }
+
         .section-title {
             border-bottom: 2px solid #007bff;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
+
         .btn-action {
             margin-right: 5px;
             margin-bottom: 5px;
@@ -116,9 +138,17 @@ try {
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <p><strong>Nombre:</strong> <?php echo htmlspecialchars($datosCliente['nombre']); ?></p>
-                            <p><strong>Email:</strong> <?php echo htmlspecialchars($datosCliente['correo']); ?></p>
-                            <p><strong>Teléfono:</strong> <?php echo htmlspecialchars($datosCliente['telefono']); ?></p>
+                            <?php
+                            // Acceder al array 'cliente' dentro de 'datosCliente'
+                            $cliente = $datosCliente['cliente'];
+
+                            // Acceder a los datos específicos del cliente
+                            ?>
+                            <p><strong>ID Cliente:</strong> <?php echo htmlspecialchars($datosCliente['id_cliente']); ?></p>
+                            <p><strong>Nombre:</strong> <?php echo htmlspecialchars($cliente['nombre']); ?></p>
+                            <p><strong>Apellido:</strong> <?php echo htmlspecialchars($cliente['apellido']); ?></p>
+                            <p><strong>Correo:</strong> <?php echo htmlspecialchars($cliente['correo']); ?></p>
+                            <p><strong>Teléfono:</strong> <?php echo htmlspecialchars($cliente['telefono']); ?></p>
                         </div>
                         <div class="col-md-6 text-end">
                             <a href="editarPerfil.php" class="btn btn-warning">Editar Perfil</a>
@@ -134,7 +164,7 @@ try {
                 <h2 class="section-title">Mascotas</h2>
                 <a href="agregarMascota.php" class="btn btn-primary">Agregar Mascota</a>
             </div>
-            
+
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead class="table-dark">
@@ -146,20 +176,25 @@ try {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($resultadoMascotas as $infoMascota): ?>
+                        <?php if (empty($resultadoMascotas)): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($infoMascota['nombre']); ?></td>
-                                <td><?php echo htmlspecialchars($infoMascota['raza']); ?></td>
-                                <td><?php echo htmlspecialchars($infoMascota['edad']); ?></td>
-                                <td>
-                                    <a href="editarInfoMascota.php?id=<?php echo $infoMascota['id_mascota']; ?>" 
-                                       class="btn btn-info btn-sm btn-action">Editar</a>
-                                    <a href="eliminarInfoMascota.php?id=<?php echo $infoMascota['id_mascota']; ?>" 
-                                       class="btn btn-danger btn-sm btn-action" 
-                                       onclick="return confirmarEliminacion('<?php echo addslashes($infoMascota['nombre']); ?>')">Eliminar</a>
+                                <td colspan="5" class="text-center">
+                                    <div class="alert alert-info">No hay mascotas asociadas. Por favor registre sus mascotas.</div>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php else: ?>
+                            <?php foreach ($resultadoMascotas as $mascota): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($mascota['NOMBRE_MASCOTA'] ?? 'No disponible'); ?></td>
+                                    <td><?php echo htmlspecialchars($mascota['RAZA'] ?? 'No disponible'); ?></td>
+                                    <td><?php echo htmlspecialchars($mascota['MESES'] ?? 'No disponible'); ?></td>
+                                    <td>
+                                        <a href="editarMascota.php?id=<?php echo $mascota['ID_MASCOTA'] ?? ''; ?>" class="btn btn-info btn-sm btn-action">Editar</a>
+                                        <a href="eliminarMascota.php?id=<?php echo $mascota['ID_MASCOTA'] ?? ''; ?>" class="btn btn-danger btn-sm btn-action" onclick="return confirmarEliminacion('<?php echo addslashes($mascota['NOMBRE_MASCOTA'] ?? ''); ?>')">Eliminar</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -171,7 +206,7 @@ try {
                 <h2 class="section-title">Citas Agendadas</h2>
                 <a href="agendarCita.php" class="btn btn-primary">Agendar Nueva Cita</a>
             </div>
-            
+
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead class="table-dark">
@@ -185,29 +220,36 @@ try {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($resultadoCitas as $row): ?>
+                        <?php if (empty($resultadoCitas)): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($row['id_cita']); ?></td>
-                                <td><?php echo htmlspecialchars($row['nombre_mascota']); ?></td>
-                                <td><?php echo htmlspecialchars($row['fecha']); ?></td>
-                                <td><?php echo htmlspecialchars($row['hora']); ?></td>
-                                <td>
-                                    <span class="badge 
-                                        <?php echo $row['estado'] == 'Pendiente' ? 'bg-warning' : 
-                                              ($row['estado'] == 'Completada' ? 'bg-success' : 'bg-secondary'); ?>">
-                                        <?php echo htmlspecialchars($row['estado']); ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <?php if ($row['estado'] == 'Pendiente'): ?>
-                                        <a href="editarCita.php?id=<?php echo $row['id_cita']; ?>" 
-                                           class="btn btn-warning btn-sm btn-action">Editar</a>
-                                        <a href="cancelarCita.php?id=<?php echo $row['id_cita']; ?>" 
-                                           class="btn btn-danger btn-sm btn-action">Cancelar</a>
-                                    <?php endif; ?>
+                                <td colspan="6" class="text-center">
+                                    <div class="alert alert-info">No hay citas agendadas. Por favor agende una cita.</div>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php else: ?>
+                            <?php foreach ($resultadoCitas as $row): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($row['id_cita']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['nombre_mascota']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['fecha']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['hora']); ?></td>
+                                    <td>
+                                        <span class="badge 
+                                        <?php echo $row['estado'] == 'Pendiente' ? 'bg-warning' : ($row['estado'] == 'Completada' ? 'bg-success' : 'bg-secondary'); ?>">
+                                            <?php echo htmlspecialchars($row['estado']); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php if ($row['estado'] == 'Pendiente'): ?>
+                                            <a href="editarCita.php?id=<?php echo $row['id_cita']; ?>"
+                                                class="btn btn-warning btn-sm btn-action">Editar</a>
+                                            <a href="cancelarCita.php?id=<?php echo $row['id_cita']; ?>"
+                                                class="btn btn-danger btn-sm btn-action">Cancelar</a>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -216,7 +258,7 @@ try {
         <!-- Gestionar Facturas-->
         <section class="mb-5">
             <h2 class="section-title">Historial de Facturas</h2>
-            
+
             <?php if (empty($resultadoFacturas)): ?>
                 <div class="alert alert-info">
                     No hay facturas registradas.
@@ -262,6 +304,7 @@ try {
         }
     </script>
 </body>
+
 </html>
 
 <?php $conn = null; ?>
