@@ -55,6 +55,12 @@ error_log("Nombre del cliente: " . $nombre);
                     <li class="nav-item">
                         <a class="nav-link" href="contactenos.php">Contactenos</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="agregarMascota.php">Agregar Mascota</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="agendarCita.php">Agendar Cita</a>
+                    </li>
                 </ul>
 
                 <div class="col-md-3 text-end d-none d-lg-block">
