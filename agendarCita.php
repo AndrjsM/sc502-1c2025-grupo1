@@ -127,8 +127,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Servicios -->
         <div class="mb-3">
-            <label for="servicio" class="form-label">Selecciona el Servicio:</label>
-            <select name="servicio" id="servicio" class="form-select" required>
+            <label for="servicios" class="form-label">Selecciona los Servicios:</label>
+            <select name="servicios[]" id="servicios" class="form-select" multiple required>
                 <?php
                 $servicios = [
                     "Atención de Emergencia",
