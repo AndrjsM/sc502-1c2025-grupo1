@@ -3,7 +3,7 @@ include('db.php');
 session_start();
 
 if (!isset($_SESSION['id_cliente'])) {
-    header("Location: login.php");
+    header("Location: dashboard.php");
     exit();
 }
 
