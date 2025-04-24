@@ -66,6 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <select name="especie" class="form-select" required>
                         <option value="Perro">Perro</option>
                         <option value="Gato">Gato</option>
+                        <option value="Conejo">Conejo</option>
+                        <option value="Hámster">Hamster</option>
+                        <option value="Ave">Ave</option>
+                        <option value="Caballo">Caballo</option>
+                        <option value="Vaca">Vaca</option>
                     </select>
                 </div>
                 <div class="mb-3">
