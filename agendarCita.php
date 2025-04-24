@@ -33,15 +33,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':veterinario', $veterinario);
 
             if ($stmt->execute()) {
-                $aviso = "✅ Cita agendada con éxito.";
+                $aviso = "Cita agendada con éxito.";
             } else {
-                $aviso = "❌ Error. No se pudo agendar la cita.";
+                $aviso = "Error. No se pudo agendar la cita.";
             }
         } catch (PDOException $e) {
-            $aviso = "❌ Error: " . $e->getMessage();
+            $aviso = "Error: " . $e->getMessage();
         }
     } else {
-        $aviso = "⚠️ Todos los campos son obligatorios.";
+        $aviso = "Todos los campos son obligatorios.";
     }
 }
 ?>
@@ -72,11 +72,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="mb-3">
             <label for="id_mascota" class="form-label">Selecciona la Mascota:</label>
             <select name="id_mascota" id="id_mascota" class="form-select" required>
+                <option value="">-- Elige una mascota --</option>
                 <?php
                 try {
-                    $query = "SELECT m.id_mascota, m.nombre 
-                              FROM usuarios_tablas.mascotas m
-                              WHERE m.id_cliente = :id_cliente";
+                    $query = "SELECT id_mascota, nombre FROM usuarios_tablas.mascotas WHERE id_cliente = :id_cliente";
                     $stmt = $conn->prepare($query);
                     $stmt->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
                     $stmt->execute();
@@ -84,13 +83,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if ($mascotas) {
                         foreach ($mascotas as $m) {
-                            echo "<option value='{$m['id_mascota']}'>" . htmlspecialchars($m['nombre']) . "</option>";
+                            echo "<option value='" . htmlspecialchars($m['id_mascota']) . "'>" . htmlspecialchars($m['nombre']) . "</option>";
                         }
                     } else {
-                        echo "<option value=''>No tienes mascotas registradas</option>";
+                        echo "<option disabled>No tienes mascotas registradas</option>";
                     }
                 } catch (PDOException $e) {
-                    echo "<option value=''>Error al cargar mascotas</option>";
+                    echo "<option disabled>Error al cargar mascotas</option>";
                 }
                 ?>
             </select>
@@ -102,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="date" name="fecha" id="fecha" class="form-control" required>
         </div>
 
-        <!-- Hora (formato más controlado) -->
+        <!-- Hora -->
         <div class="mb-3">
             <label for="hora" class="form-label">Hora:</label>
             <select name="hora" id="hora" class="form-select" required>
@@ -152,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         echo "<option value='" . $v['id_veterinario'] . "'>" . htmlspecialchars($v['nombre']) . "</option>";
                     }
                 } catch (PDOException $e) {
-                    echo "<option value=''>Error al cargar veterinarios</option>";
+                    echo "<option disabled>Error al cargar veterinarios</option>";
                 }
                 ?>
             </select>
