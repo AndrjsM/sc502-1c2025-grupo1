@@ -8,9 +8,11 @@ if (!isset($_SESSION['id_cliente'])) {
 }
 
 $id_cliente = $_SESSION['id_cliente'];
-
+error_log("ID Cliente: " . $id_cliente); // Para depuración
 // Gestionar citas y facturas
 try {
+    // Comentando la consulta de citas
+    /*
     $citasCliente = "SELECT c.*, m.nombre as nombre_mascota 
                     FROM citas c 
                     JOIN mascotas m ON c.id_mascota = m.id_mascota 
@@ -20,21 +22,31 @@ try {
     $stmt->bindParam(':id_cliente', $id_cliente);
     $stmt->execute();
     $resultadoCitas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    */
+    $resultadoCitas = []; // Mensaje de vacío
 
+    // Comentando la consulta de facturas
+    /*
     $facturasCliente = "SELECT * FROM facturas 
                        WHERE id_cita IN (SELECT id_cita FROM citas WHERE id_cliente = :id_cliente)";
     $stmt = $conn->prepare($facturasCliente);
     $stmt->bindParam(':id_cliente', $id_cliente);
     $stmt->execute();
     $resultadoFacturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    */
+    $resultadoFacturas = []; // Mensaje de vacío
 
     // Perfil de Cliente
+    /*
     $infoCliente = "SELECT * FROM clientes WHERE id_cliente = :id_cliente";
     $stmt = $conn->prepare($infoCliente);
     $stmt->bindParam(':id_cliente', $id_cliente);
     $stmt->execute();
     $resultadoCliente = $stmt->fetch(PDO::FETCH_ASSOC);
     $datosCliente = $resultadoCliente;
+    */
+    $datosCliente = $_SESSION; // Datos del cliente desde la sesión
+    error_log("Datos del cliente: " . print_r($datosCliente, true)); // Para depuración
 
     // Mascotas
     $infoMascota = "SELECT * FROM mascotas WHERE id_cliente = :id_cliente";

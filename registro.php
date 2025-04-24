@@ -26,7 +26,7 @@
 
                             $identificacion = $_POST['identificacion'];
                             $nombre = $_POST['nombre'];
-                            $primerApellido = $_POST['primerApellido'];
+                            $apellido = $_POST['primerApellido'];
                             $segundoApellido = $_POST['segundoApellido'];
                             $correo = $_POST['correo'];
                             $telefono = $_POST['telefono'];
@@ -37,15 +37,16 @@
                             $direccionSennas = $_POST['direccionSennas'];
 
                             try {
-                                $stmt = $conn->prepare("BEGIN registrarCliente(:identificacion, :nombre, :primerApellido, :correo, :telefono, :direccion, :password, :idCliente); END;");
+                                $stmt = $conn->prepare("BEGIN registrarCliente(:identificacion, :nombre, :apellido, :correo, :telefono, :direccion, :password, :idCliente); END;");
 
                                 $stmt->bindParam(':identificacion', $identificacion);
                                 $stmt->bindParam(':nombre', $nombre);
-                                $stmt->bindParam(':primerApellido', $primerApellido);
+                                $stmt->bindParam(':apellido', $primerApellido);
                                 $stmt->bindParam(':correo', $correo);
                                 $stmt->bindParam(':telefono', $telefono);
                                 $stmt->bindParam(':direccion', $direccionSennas);
-                                $stmt->bindParam(':password', $password);
+                                $passwordHash = password_hash($password, PASSWORD_DEFAULT); // Encriptar la contraseña
+                                $stmt->bindParam(':password', $passwordHash);
 
                                 $idCliente = null;
                                 $stmt->bindParam(':idCliente', $idCliente, PDO::PARAM_INT | PDO::PARAM_INPUT_OUTPUT, 32);
