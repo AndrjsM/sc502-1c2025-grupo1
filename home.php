@@ -67,7 +67,7 @@
                         <li><i class="bi bi-check-circle text-success"></i> Diagnóstico por imágenes</li>
                         <li><i class="bi bi-check-circle text-success"></i> Hospitalización</li>
                     </ul>
-                    <a href="#" class="btn btn-primary">Más información</a>
+                    <a href="servicios.php" class="btn btn-primary">Más información</a>
                 </div>
             </div>
         </div>
@@ -88,7 +88,7 @@
                         <li><i class="bi bi-check-circle text-success"></i> Limpieza dental</li>
                         <li><i class="bi bi-check-circle text-success"></i> Perfumería para mascotas</li>
                     </ul>
-                    <a href="#" class="btn btn-warning">Más información</a>
+                    <a href="servicios.php" class="btn btn-warning">Más información</a>
                 </div>
             </div>
         </div>
@@ -113,7 +113,6 @@
                             <li><i class="bi bi-phone me-2"></i>+506 1234 5678</li>
                             <li><i class="bi bi-clock me-2"></i>Lunes a Viernes: 8:00 AM - 6:00 PM</li>
                         </ul>
-                        <a href="#" class="btn btn-primary">Enviar mensaje</a>
                     </div>
                 </div>
             </div>

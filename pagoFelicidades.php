@@ -1,3 +1,4 @@
+<!-- home.php -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gracias por tu compra - Patitas al Rescate</title>
+
     <!-- CSS externo primero -->
     <link rel="stylesheet" href="https://2-22-4-dot-lead-pages.appspot.com/static/lp918/min/default_thank_you.css">
     <!-- Bootstrap después -->
@@ -13,11 +15,58 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Fuentes -->
     <link href="https://fonts.googleapis.com/css?family=Lato:300,400|Montserrat:700" rel="stylesheet">
+
+    <!-- Sobrescribir estilos para evitar colores no deseados -->
+    <style>
+        /* Corregir colores del header y footer */
+        header, header * {
+            color: #212529 !important;
+        }
+
+        footer, footer * {
+            color: #212529 !important;
+        }
+
+        .nav-link,
+        .navbar-brand,
+        .dropdown-item {
+            color: #212529 !important;
+        }
+
+        .btn-outline-primary,
+        .btn-outline-primary:hover {
+            color: #0d6efd !important;
+            border-color: #0d6efd !important;
+        }
+
+        .link-body-emphasis {
+            color: #212529 !important;
+        }
+
+        /* Forzar color azul del botón "Descargar Factura" */
+        .btn.btn-primary {
+            background-color: #0d6efd !important;
+            border-color: #0d6efd !important;
+            color: #fff !important;
+        }
+
+        /* Cambiar el botón "Registrarse" a blanco */
+        a.btn.btn-secondary,
+        button.btn.btn-secondary {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+            border-color: #ced4da !important;
+        }
+
+        a.btn.btn-secondary:hover,
+        button.btn.btn-secondary:hover {
+            background-color: #f8f9fa !important;
+        }
+    </style>
 </head>
 <body>
     <?php include 'header.php'; ?>
 
-    <!-- Bugfix de las letras -->
     <div class="container mt-5 mb-5 text-center text-dark">
         <i class="fas fa-check fa-5x text-success mb-4"></i>
         <h1 class="site-header__title">¡GRACIAS POR TU COMPRA!</h1>
