@@ -463,3 +463,17 @@ commit;
 SELECT object_name, status
 FROM user_objects
 WHERE object_name = 'AGENDARCITA';
+
+SELECT c.ID_CITA, c.fecha_cita, c.estado, m.nombre AS mascota, v.nombre AS veterinario
+FROM citas_tablas.citas c
+JOIN usuarios_tablas.mascotas m ON c.ID_MASCOTA = m.ID_MASCOTA
+JOIN usuarios_tablas.veterinarios v ON c.id_veterinario = v.id_veterinario
+WHERE m.id_cliente = 41;
+
+SELECT f.ID_FACTURA, f.TOTAL, f.FECHA_FACTURA, 
+       CASE 
+           WHEN c.FECHA_CITA < SYSDATE THEN 'Pagada'
+           ELSE 'Pendiente'
+       END AS ESTADO
+FROM CITAS_TABLAS.FACTURAS f
+WHERE m.ID_CLIENTE = 41;

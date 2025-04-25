@@ -26,16 +26,43 @@ try {
     */
     $resultadoCitas = []; // Mensaje de vacío
 
-    // Comentando la consulta de facturas
-    /*
-    $facturasCliente = "SELECT * FROM facturas 
-                       WHERE id_cita IN (SELECT id_cita FROM citas WHERE id_cliente = :id_cliente)";
-    $stmt = $conn->prepare($facturasCliente);
-    $stmt->bindParam(':id_cliente', $id_cliente);
-    $stmt->execute();
-    $resultadoFacturas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    */
-    $resultadoFacturas = []; // Mensaje de vacío
+    // Consultar citas para todas las mascotas del usuario
+    $queryCitas = "
+        SELECT C.ID_CITA, C.FECHA_CITA, C.ESTADO, M.NOMBRE AS MASCOTA, V.NOMBRE AS VETERINARIO
+        FROM CITAS_TABLAS.CITAS C
+        JOIN USUARIOS_TABLAS.MASCOTAS M ON C.ID_MASCOTA = M.ID_MASCOTA
+        JOIN USUARIOS_TABLAS.VETERINARIOS V ON C.ID_VETERINARIO = V.ID_VETERINARIO
+        WHERE M.ID_CLIENTE = :ID_CLIENTE
+    ";
+    $stmtCitas = $conn->prepare($queryCitas);
+    $stmtCitas->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
+    $stmtCitas->execute();
+    $resultadoCitas = $stmtCitas->fetchAll(PDO::FETCH_ASSOC);
+    error_log("Citas: " . print_r($resultadoCitas, true)); // Para depuración
+
+
+    // Consultar facturas generadas por las mascotas del usuario
+    $queryFacturas = "
+        SELECT f.ID_FACTURA, f.FECHA_FACTURA, f.TOTAL, 
+               CASE 
+                   WHEN c.FECHA_CITA < SYSDATE THEN 'Pagada'
+                   ELSE 'Pendiente'
+               END AS ESTADO
+        FROM CITAS_TABLAS.FACTURAS f
+        JOIN CITAS_TABLAS.CITAS_SERVICIOS cs ON f.ID_FACTURA = cs.FACTURAS_ID_FACTURA
+        JOIN CITAS_TABLAS.CITAS c ON cs.ID_CITA = c.ID_CITA
+        WHERE c.ID_MASCOTA IN (
+            SELECT m.ID_MASCOTA
+            FROM USUARIOS_TABLAS.MASCOTAS m
+            WHERE m.ID_CLIENTE = :id_cliente
+        )
+    ";
+    $stmtFacturas = $conn->prepare($queryFacturas);
+    $stmtFacturas->bindParam(':id_cliente', $id_cliente, PDO::PARAM_INT);
+    $stmtFacturas->execute();
+    $resultadoFacturas = $stmtFacturas->fetchAll(PDO::FETCH_ASSOC);
+    error_log("Facturas: " . print_r($resultadoFacturas, true)); // Para depuración
+
 
     // Perfil de Cliente
     /*
@@ -113,13 +140,13 @@ WHERE
             margin-bottom: 20px;
         }
 
-       //.btn-primary {
-         //background-color: #007bff;
-           // border: none;
-            //border-radius: 20px;
-            //padding: 10px 20px;
-            //font-size: 0.9rem;
-        //}
+        /* .btn-primary {
+            background-color: #007bff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        } */
 
         .btn-primary:hover {
             background-color: #0056b3;
@@ -227,9 +254,8 @@ WHERE
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Mascota</th>
+                            <th>Mascota</th>|
                             <th>Fecha</th>
-                            <th>Hora</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -244,19 +270,18 @@ WHERE
                         <?php else: ?>
                             <?php foreach ($resultadoCitas as $row): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($row['id_cita']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['nombre_mascota']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['fecha']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['hora']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['ID_CITA']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['MASCOTA']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['FECHA_CITA']); ?></td>
                                     <td>
-                                        <span class="badge <?php echo $row['estado'] == 'Pendiente' ? 'bg-warning' : ($row['estado'] == 'Completada' ? 'bg-success' : 'bg-secondary'); ?>">
-                                            <?php echo htmlspecialchars($row['estado']); ?>
+                                        <span class="badge <?php echo $row['ESTADO'] == 'Activa' ? 'bg-warning' : ($row['ESTADO'] == 'Completada' ? 'bg-success' : 'bg-secondary'); ?>">
+                                            <?php echo htmlspecialchars($row['ESTADO']); ?>
                                         </span>
                                     </td>
                                     <td>
-                                        <?php if ($row['estado'] == 'Pendiente'): ?>
-                                            <a href="editarCita.php?id=<?php echo $row['id_cita']; ?>" class="btn btn-warning btn-sm">Editar</a>
-                                            <a href="cancelarCita.php?id=<?php echo $row['id_cita']; ?>" class="btn btn-danger btn-sm">Cancelar</a>
+                                        <?php if ($row['ESTADO'] == 'Activa'): ?>
+                                            <a href="editarCita.php?id=<?php echo $row['ID_CITA']; ?>" class="btn btn-warning btn-sm">Editar</a>
+                                            <a href="cancelarCita.php?id=<?php echo $row['ID_CITA']; ?>" class="btn btn-danger btn-sm">Cancelar</a>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -269,10 +294,9 @@ WHERE
 
         <!-- Facturas -->
         <section class="mb-5">
-            <h2 class="section-title">Historial de Facturas</h2>
             <?php if (empty($resultadoFacturas)): ?>
                 <div class="alert alert-info">
-                    No hay facturas registradas.
+                    No hay facturas registradas para las mascotas del usuario.
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
@@ -280,20 +304,20 @@ WHERE
                         <thead>
                             <tr>
                                 <th>ID Factura</th>
-                                <th>Monto</th>
                                 <th>Fecha</th>
+                                <th>Total</th>
                                 <th>Estado</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($resultadoFacturas as $row): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($row['id_factura']); ?></td>
-                                    <td>₡<?php echo number_format(htmlspecialchars($row['monto']), 2); ?></td>
-                                    <td><?php echo htmlspecialchars($row['fecha']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['ID_FACTURA']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['FECHA_FACTURA']); ?></td>
+                                    <td>₡<?php echo number_format(htmlspecialchars($row['TOTAL']), 2); ?></td>
                                     <td>
-                                        <span class="badge <?php echo $row['estado'] == 'Pagada' ? 'bg-success' : 'bg-warning'; ?>">
-                                            <?php echo htmlspecialchars($row['estado']); ?>
+                                        <span class="badge <?php echo $row['ESTADO'] == 'Pagada' ? 'bg-success' : 'bg-warning'; ?>">
+                                            <?php echo htmlspecialchars($row['ESTADO']); ?>
                                         </span>
                                     </td>
                                 </tr>
